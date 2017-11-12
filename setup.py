@@ -1,5 +1,5 @@
 """
-My Tool does one thing, and one thing well.
+MetaGenScope-CLI is used to upload data sets to the MetaGenScope web platform.
 """
 from setuptools import find_packages, setup
 
@@ -12,7 +12,7 @@ setup(
     license='BSD',
     author='Benjamin Chrobot',
     author_email='benjamin.chrobot@alum.mit.edu',
-    description='My Tool does one thing, and one thing well.',
+    description='MetaGenScope-CLI is used to upload data sets to the MetaGenScope web platform.',
     long_description=__doc__,
     packages=find_packages(exclude=['tests']),
     include_package_data=True,
@@ -26,13 +26,7 @@ setup(
     },
     classifiers=[
         # As from http://pypi.python.org/pypi?%3Aaction=list_classifiers
-        # 'Development Status :: 1 - Planning',
-        # 'Development Status :: 2 - Pre-Alpha',
-        # 'Development Status :: 3 - Alpha',
-        'Development Status :: 4 - Beta',
-        # 'Development Status :: 5 - Production/Stable',
-        # 'Development Status :: 6 - Mature',
-        # 'Development Status :: 7 - Inactive',
+        'Development Status :: 3 - Alpha',
         'Environment :: Console',
         'Intended Audience :: Developers',
         'License :: OSI Approved :: BSD License',

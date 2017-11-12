@@ -1,6 +1,6 @@
 # MetaGenScope CLI
 
-My Tool does one thing, and one thing well.
+MetaGenScope-CLI is used to upload data sets to the MetaGenScope web platform.
 
 
 # Installation
