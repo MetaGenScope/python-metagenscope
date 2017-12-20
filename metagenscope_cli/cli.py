@@ -6,6 +6,7 @@ from metagenscope_cli.tools.metaphlan2 import metaphlan2
 from metagenscope_cli.tools.kraken import kraken
 from metagenscope_cli.tools.nanopore import nanopore
 from metagenscope_cli.tools.microbe_census import microbe_census
+from metagenscope_cli.tools.reads_classified import reads_classified
 
 
 @click.group()
@@ -19,3 +20,4 @@ main.add_command(metaphlan2)
 main.add_command(kraken)
 main.add_command(nanopore)
 main.add_command(microbe_census)
+main.add_command(reads_classified)

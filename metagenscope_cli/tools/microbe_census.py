@@ -4,7 +4,8 @@ import click
 
 from metagenscope_cli.tools.utils import deliver_payload
 
-#### Expected input-tsv content:
+# Expected input-file content:
+
 # Parameters
 # metagenome: [[path].fastq.gz]...
 # reads_sampled:  2000000
@@ -31,7 +32,6 @@ GENOME_EQUIVALENTS_KEY = 'genome_equivalents'
 @click.argument('input-file', type=click.File('rb'))
 def microbe_census(auth_token, input_file):
     """Upload microbe census results to the MetaGenScope web platform."""
-
     data = {}
     for line in iter(input_file):
         parts = line.rstrip("\n").split("\t")
