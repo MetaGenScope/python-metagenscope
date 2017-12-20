@@ -3,9 +3,7 @@
 import click
 
 from metagenscope_cli.utils import deliver_payload
-
-TAXON_KEY = 'taxon'
-ABUNDANCE_KEY = 'abundance'
+from metagenscope_cli.constants import KRAKEN_TOOL_NAME, TAXON_KEY, ABUNDANCE_KEY
 
 
 @click.command()
@@ -24,19 +22,18 @@ def kraken(taxon_column_index, abundance_column_index, auth_token, input_tsv):
         }
         data.append(row)
 
+    # Normalize abundance
+    # Should this actually be happening at this stage? Or instead during visualization step?
     root_taxon_total_abundance = 0
     for row in data:
         # Only sum the top level taxon abundances
         if '|' not in row[TAXON_KEY]:
             root_taxon_total_abundance += row[ABUNDANCE_KEY]
-
-    # Normalize abundance
-    # Should this actually be happening at this stage? Or instead during visualization step?
     for i in range(0, len(data)):
         data[i][ABUNDANCE_KEY] /= root_taxon_total_abundance
 
     payload = {
-        'tool_name': 'kraken',
+        'tool_name': KRAKEN_TOOL_NAME,
         'data': data,
     }
 

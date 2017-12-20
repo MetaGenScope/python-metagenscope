@@ -3,6 +3,7 @@
 import click
 
 from metagenscope_cli.utils import tsv_to_dict, deliver_payload
+from metagenscope_cli.constants import METAPHLAN_TOOL_NAME, TAXON_KEY, ABUNDANCE_KEY
 
 
 @click.command()
@@ -31,13 +32,13 @@ def metaphlan2(taxon_column, abundance_column, auth_token, input_tsv):
     def normalize_data(raw_dict):
         """Convert supplied column names to standard column names expected by MetaGenScope."""
         return {
-            'taxon': raw_dict[taxon_column],
-            'abundance': raw_dict[abundance_column],
+            TAXON_KEY: raw_dict[taxon_column],
+            ABUNDANCE_KEY: raw_dict[abundance_column],
         }
 
     data = [normalize_data(row) for row in tsv_data['data']]
     payload = {
-        'tool_name': 'metaphlan2',
+        'tool_name': METAPHLAN_TOOL_NAME,
         'data': data,
     }
 
