@@ -2,8 +2,8 @@
 
 import click
 
-from metagenscope_cli.utils import tsv_to_dict, deliver_payload
-from metagenscope_cli.constants import METAPHLAN_TOOL_NAME, TAXON_KEY, ABUNDANCE_KEY
+from metagenscope_cli.tools.utils import tsv_to_dict, deliver_payload
+from metagenscope_cli.tools.constants import METAPHLAN_TOOL_NAME, TAXON_KEY, ABUNDANCE_KEY
 
 
 @click.command()

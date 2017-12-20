@@ -2,8 +2,8 @@
 
 import click
 
-from metagenscope_cli.utils import deliver_payload
-from metagenscope_cli.constants import NANOPORE_TOOL_NAME, TAXON_KEY, ABUNDANCE_KEY
+from metagenscope_cli.tools.utils import deliver_payload
+from metagenscope_cli.tools.constants import NANOPORE_TOOL_NAME, TAXON_KEY, ABUNDANCE_KEY
 
 
 @click.command()
