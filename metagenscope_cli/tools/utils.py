@@ -4,7 +4,32 @@ import click
 import requests
 import json
 
+from functools import wraps
+
 from metagenscope_cli.network.token_auth import TokenAuth
+
+
+def upload_command(tool_name):
+    """Create upload decorator for tool name."""
+    def decorator(create_payload):
+        """Wrap payload generation with standard upload command."""
+        @click.command()
+        @click.option('--auth-token', help='JWT for authorization.')
+        @click.option('--verbose', '-v', is_flag=True, help='Verbose reporting.')
+        @click.argument('input-file', type=click.File('rb'))
+        @wraps(create_payload)
+        def wrapper(auth_token, verbose, input_file, *args, **kwargs):
+            """Generate and deliver payload."""
+            click.echo('Beginning upload for: {0}'.format(tool_name))
+
+            payload = {
+                'tool_name': tool_name,
+                'data': create_payload(input_file, *args, **kwargs),
+            }
+
+            return deliver_payload(payload, auth_token, verbose)
+        return wrapper
+    return decorator
 
 
 def tsv_to_dict(input_tsv):
