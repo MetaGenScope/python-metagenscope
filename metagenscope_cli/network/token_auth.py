@@ -3,6 +3,7 @@
 from requests.auth import AuthBase
 
 
+# pylint: disable=too-few-public-methods
 class TokenAuth(AuthBase):
     """Attaches MetaGenScope Token Authentication to the given Request object."""
 

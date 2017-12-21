@@ -1,7 +1,8 @@
 """Upload reads classified results to the MetaGenScope web platform."""
 
-import click
 import json
+
+import click
 
 from metagenscope_cli.tools.utils import upload_command
 
@@ -21,7 +22,6 @@ def reads_classified(input_file):
     # Validate required values
     for key in [VIRUS_KEY, ARCHAEA_KEY, BACTERIA_KEY, HOST_KEY, UNKNOWN_KEY]:
         if key not in data:
-            click.secho('Error: missing {0}!'.format(key), fg='red')
-            return
+            raise click.ClickException('Missing {0}!'.format(key))
 
     return data

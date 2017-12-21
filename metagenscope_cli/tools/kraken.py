@@ -27,7 +27,7 @@ def kraken(input_file, taxon_column_index, abundance_column_index):
         # Only sum the top level taxon abundances
         if '|' not in row[TAXON_KEY]:
             root_taxon_total_abundance += row[ABUNDANCE_KEY]
-    for i in range(0, len(data)):
-        data[i][ABUNDANCE_KEY] /= root_taxon_total_abundance
+    for datum in data:
+        datum[ABUNDANCE_KEY] /= root_taxon_total_abundance
 
     return data

@@ -3,29 +3,35 @@ version: 2
 jobs:
   build:
     docker:
-      - image: metagenscope/detox:latest
+      - image: themattrix/tox
 
     steps:
       - checkout
 
-      - restore_cache:
-          key: deps1-{{ .Branch }}-{{ checksum "setup.py" }}
+      - run:
+          name: Run tests with py27
+          command: tox -e py27
 
       - run:
-          name: Install dependencies
-          command: |
-            python3 -m venv venv
-            . venv/bin/activate
-            pip install -e .
-            pip install detox
-
-      - save_cache:
-          key: deps1-{{ .Branch }}-{{ checksum "setup.py" }}
-          paths:
-            - "venv"
+          name: Run tests with py34
+          command: tox -e py34
 
       - run:
-          name: Run tests
-          command: |
-            . venv/bin/activate
-            detox
+          name: Run tests with py35
+          command: tox -e py35
+
+      - run:
+          name: Run tests with py36
+          command: tox -e py36
+
+      - run:
+          name: Run tests with pypy
+          command: tox -e pypy
+
+      - run:
+          name: Run tests with pypy3
+          command: tox -e pypy3
+
+      - run:
+          name: Run tests with pylint
+          command: tox -e pylint

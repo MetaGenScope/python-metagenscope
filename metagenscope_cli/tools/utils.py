@@ -1,10 +1,10 @@
 """Utility methods for CLI tool."""
 
+import json
+from functools import wraps
+
 import click
 import requests
-import json
-
-from functools import wraps
 
 from metagenscope_cli.network.token_auth import TokenAuth
 
@@ -78,6 +78,3 @@ def deliver_payload(payload, auth_token, verbose=False):
                 # Invalid JSON in response
                 for line in request.text.splitlines():
                     click.secho("    {0}".format(line), fg='red')
-            except Exception as exception:
-                click.secho("\tException type: {0}".format(type(exception)), fg='red')
-                click.secho("\tException args: {0}".format(exception.args), fg='red')

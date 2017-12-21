@@ -17,15 +17,13 @@ def metaphlan2(input_file, taxon_column, abundance_column):
 
     # Require valid taxon column name
     if taxon_column not in tsv_data['column_names']:
-        error_message = 'Error: input .tsv file missing specified taxon column name: {0}'
-        click.secho(error_message.format(taxon_column), fg='red')
-        return
+        error_message = 'Input .tsv file missing specified taxon column name: {0}'
+        raise click.ClickException(error_message.format(taxon_column))
 
     # Require valid abundance column name
     if abundance_column not in tsv_data['column_names']:
-        error_message = 'Error: input .tsv file missing specified abundance column name: {0}'
-        click.secho(error_message.format(abundance_column), fg='red')
-        return
+        error_message = 'Input .tsv file missing specified abundance column name: {0}'
+        raise click.ClickException(error_message.format(abundance_column))
 
     def normalize_data(raw_dict):
         """Convert supplied column names to standard column names expected by MetaGenScope."""

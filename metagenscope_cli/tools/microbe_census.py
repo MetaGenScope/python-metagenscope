@@ -42,7 +42,6 @@ def microbe_census(input_file):
     # Require valid values
     for key in [AGS_KEY, TOTAL_BASES_KEY, GENOME_EQUIVALENTS_KEY]:
         if key not in data:
-            click.secho('Error: missing {0}!'.format(key), fg='red')
-            return
+            raise click.ClickException('Missing {0}!'.format(key))
 
     return data
