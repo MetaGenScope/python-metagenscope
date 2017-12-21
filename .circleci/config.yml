@@ -1,15 +1,31 @@
 version: 2
 
 jobs:
-  test_cli:
+  build:
     docker:
       - image: metagenscope/detox:latest
 
     steps:
       - checkout
 
-      - setup_remote_docker
+      - restore_cache:
+          key: deps1-{{ .Branch }}-{{ checksum "setup.py" }}
+
+      - run:
+          name: Install dependencies
+          command: |
+            python3 -m venv venv
+            . venv/bin/activate
+            pip install -e .
+            pip install detox
+
+      - save_cache:
+          key: deps1-{{ .Branch }}-{{ checksum "setup.py" }}
+          paths:
+            - "venv"
 
       - run:
           name: Run tests
-          command: tox
+          command: |
+            . venv/bin/activate
+            detox
