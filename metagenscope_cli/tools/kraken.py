@@ -2,19 +2,17 @@
 
 import click
 
-from metagenscope_cli.tools.utils import deliver_payload
-from metagenscope_cli.tools.constants import KRAKEN_TOOL_NAME, TAXON_KEY, ABUNDANCE_KEY
+from metagenscope_cli.tools.utils import upload_command
+from metagenscope_cli.tools.constants import TAXON_KEY, ABUNDANCE_KEY
 
 
-@click.command()
+@upload_command(tool_name='kraken')
 @click.option('--taxon-column-index', '-t', default=0, help='The taxon column index.')
 @click.option('--abundance-column-index', '-a', default=1, help='The abundance column index.')
-@click.option('--auth-token', help='JWT for authorization.')
-@click.argument('input-tsv', type=click.File('rb'))
-def kraken(taxon_column_index, abundance_column_index, auth_token, input_tsv):
+def kraken(input_file, taxon_column_index, abundance_column_index):
     """Upload kraken results to the MetaGenScope web platform."""
     data = []
-    for line in iter(input_tsv):
+    for line in iter(input_file):
         parts = line.rstrip("\n").split("\t")
         row = {
             TAXON_KEY: parts[taxon_column_index],
@@ -32,9 +30,4 @@ def kraken(taxon_column_index, abundance_column_index, auth_token, input_tsv):
     for i in range(0, len(data)):
         data[i][ABUNDANCE_KEY] /= root_taxon_total_abundance
 
-    payload = {
-        'tool_name': KRAKEN_TOOL_NAME,
-        'data': data,
-    }
-
-    deliver_payload(payload, auth_token)
+    return data

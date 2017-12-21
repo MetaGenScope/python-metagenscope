@@ -2,20 +2,18 @@
 
 import click
 
-from metagenscope_cli.tools.utils import tsv_to_dict, deliver_payload
-from metagenscope_cli.tools.constants import METAPHLAN_TOOL_NAME, TAXON_KEY, ABUNDANCE_KEY
+from metagenscope_cli.tools.utils import upload_command, tsv_to_dict
+from metagenscope_cli.tools.constants import TAXON_KEY, ABUNDANCE_KEY
 
 
-@click.command()
+@upload_command(tool_name='metaphlan2')
 @click.option('--taxon-column', '-t', default='#SampleID', help='The taxon column name.')
 @click.option('--abundance-column', '-a',
               default='Metaphlan2_Analysis',
               help='The abundance column name.')
-@click.option('--auth-token', help='JWT for authorization.')
-@click.argument('input-tsv', type=click.File('rb'))
-def metaphlan2(taxon_column, abundance_column, auth_token, input_tsv):
+def metaphlan2(input_file, taxon_column, abundance_column):
     """Upload metaphlan2 results to the MetaGenScope web platform."""
-    tsv_data = tsv_to_dict(input_tsv)
+    tsv_data = tsv_to_dict(input_file)
 
     # Require valid taxon column name
     if taxon_column not in tsv_data['column_names']:
@@ -37,9 +35,5 @@ def metaphlan2(taxon_column, abundance_column, auth_token, input_tsv):
         }
 
     data = [normalize_data(row) for row in tsv_data['data']]
-    payload = {
-        'tool_name': METAPHLAN_TOOL_NAME,
-        'data': data,
-    }
 
-    deliver_payload(payload, auth_token)
+    return data

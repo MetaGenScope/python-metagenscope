@@ -2,7 +2,7 @@
 
 import click
 
-from metagenscope_cli.tools.utils import deliver_payload
+from metagenscope_cli.tools.utils import upload_command
 
 # Expected input-file content:
 
@@ -21,16 +21,13 @@ from metagenscope_cli.tools.utils import deliver_payload
 # genome_equivalents: 24.2430249022
 
 
-MICROBE_CENSUS_TOOL_NAME = 'microbe_census'
 AGS_KEY = 'average_genome_size'
 TOTAL_BASES_KEY = 'total_bases'
 GENOME_EQUIVALENTS_KEY = 'genome_equivalents'
 
 
-@click.command()
-@click.option('--auth-token', help='JWT for authorization.')
-@click.argument('input-file', type=click.File('rb'))
-def microbe_census(auth_token, input_file):
+@upload_command(tool_name='microbe_census')
+def microbe_census(input_file):
     """Upload microbe census results to the MetaGenScope web platform."""
     data = {}
     for line in iter(input_file):
@@ -48,9 +45,4 @@ def microbe_census(auth_token, input_file):
             click.secho('Error: missing {0}!'.format(key), fg='red')
             return
 
-    payload = {
-        'tool_name': MICROBE_CENSUS_TOOL_NAME,
-        'data': data,
-    }
-
-    deliver_payload(payload, auth_token)
+    return data

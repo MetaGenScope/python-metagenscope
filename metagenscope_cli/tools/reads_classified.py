@@ -3,10 +3,8 @@
 import click
 import json
 
-from metagenscope_cli.tools.utils import deliver_payload
+from metagenscope_cli.tools.utils import upload_command
 
-
-READS_CLASSIFIED_TOOL_NAME = 'reads_classified'
 
 VIRUS_KEY = 'virus'
 ARCHAEA_KEY = 'archaea'
@@ -15,10 +13,8 @@ HOST_KEY = 'host'
 UNKNOWN_KEY = 'unknown'
 
 
-@click.command()
-@click.option('--auth-token', help='JWT for authorization.')
-@click.argument('input-file', type=click.File('rb'))
-def reads_classified(auth_token, verbose, input_file):
+@upload_command(tool_name='reads_classified')
+def reads_classified(input_file):
     """Upload reads classified results to the MetaGenScope web platform."""
     data = json.loads(input_file.read())
 
@@ -28,9 +24,4 @@ def reads_classified(auth_token, verbose, input_file):
             click.secho('Error: missing {0}!'.format(key), fg='red')
             return
 
-    payload = {
-        'tool_name': READS_CLASSIFIED_TOOL_NAME,
-        'data': data,
-    }
-
-    deliver_payload(payload, auth_token, verbose)
+    return data
