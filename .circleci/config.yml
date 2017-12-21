@@ -1,0 +1,15 @@
+version: 2
+
+jobs:
+  test_cli:
+    docker:
+      - image: metagenscope/detox:latest
+
+    steps:
+      - checkout
+
+      - setup_remote_docker
+
+      - run:
+          name: Run tests
+          command: tox
