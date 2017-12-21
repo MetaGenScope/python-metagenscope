@@ -17,8 +17,9 @@ UNKNOWN_KEY = 'unknown'
 
 @click.command()
 @click.option('--auth-token', help='JWT for authorization.')
+@click.option('--verbose', '-vv', is_flag=True, help='Verbose reporting.')
 @click.argument('input-file', type=click.File('rb'))
-def reads_classified(auth_token, input_file):
+def reads_classified(auth_token, verbose, input_file):
     """Upload reads classified results to the MetaGenScope web platform."""
     data = json.loads(input_file.read())
 
@@ -33,4 +34,4 @@ def reads_classified(auth_token, input_file):
         'data': data,
     }
 
-    deliver_payload(payload, auth_token)
+    deliver_payload(payload, auth_token, verbose)
