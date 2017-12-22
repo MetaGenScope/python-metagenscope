@@ -9,7 +9,7 @@ USER_SECTION_KEY = 'user'
 TOKEN_OPTION_KEY = 'token'
 
 
-class MetagenscopeConfiguration:
+class MetagenscopeConfiguration(object):
     """MetaGenScope configuration."""
 
     def __init__(self, filename, dirname='~'):
