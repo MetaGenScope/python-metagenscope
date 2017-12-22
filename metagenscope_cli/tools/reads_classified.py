@@ -14,9 +14,8 @@ HOST_KEY = 'host'
 UNKNOWN_KEY = 'unknown'
 
 
-@upload_command(tool_name='reads_classified')
-def reads_classified(input_file):
-    """Upload reads classified results to the MetaGenScope web platform."""
+def reads_classified_data(input_file):
+    """Ingest reads classified results file."""
     data = json.loads(input_file.read())
 
     # Validate required values
@@ -25,3 +24,9 @@ def reads_classified(input_file):
             raise click.ClickException('Missing {0}!'.format(key))
 
     return data
+
+
+@upload_command(tool_name='reads_classified')
+def reads_classified(input_file):
+    """Upload reads classified results to the MetaGenScope web platform."""
+    return reads_classified_data(input_file)

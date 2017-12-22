@@ -26,9 +26,8 @@ TOTAL_BASES_KEY = 'total_bases'
 GENOME_EQUIVALENTS_KEY = 'genome_equivalents'
 
 
-@upload_command(tool_name='microbe_census')
-def microbe_census(input_file):
-    """Upload microbe census results to the MetaGenScope web platform."""
+def microbe_census_data(input_file):
+    """Ingest microbe census results file."""
     data = {}
     for line in iter(input_file):
         parts = line.rstrip("\n").split("\t")
@@ -45,3 +44,9 @@ def microbe_census(input_file):
             raise click.ClickException('Missing {0}!'.format(key))
 
     return data
+
+
+@upload_command(tool_name='microbe_census')
+def microbe_census(input_file):
+    """Upload microbe census results to the MetaGenScope web platform."""
+    return microbe_census_data(input_file)

@@ -6,11 +6,8 @@ from metagenscope_cli.tools.utils import upload_command
 from metagenscope_cli.tools.constants import TAXON_KEY, ABUNDANCE_KEY
 
 
-@upload_command(tool_name='kraken')
-@click.option('--taxon-column-index', '-t', default=0, help='The taxon column index.')
-@click.option('--abundance-column-index', '-a', default=1, help='The abundance column index.')
-def kraken(input_file, taxon_column_index, abundance_column_index):
-    """Upload kraken results to the MetaGenScope web platform."""
+def kraken_data(input_file, taxon_column_index, abundance_column_index):
+    """Ingest kraken results file."""
     data = []
     for line in iter(input_file):
         parts = line.rstrip("\n").split("\t")
@@ -31,3 +28,11 @@ def kraken(input_file, taxon_column_index, abundance_column_index):
         datum[ABUNDANCE_KEY] /= root_taxon_total_abundance
 
     return data
+
+
+@upload_command(tool_name='kraken')
+@click.option('--taxon-column-index', '-t', default=0, help='The taxon column index.')
+@click.option('--abundance-column-index', '-a', default=1, help='The abundance column index.')
+def kraken(input_file, taxon_column_index, abundance_column_index):
+    """Upload kraken results to the MetaGenScope web platform."""
+    return kraken_data(input_file, taxon_column_index, abundance_column_index)

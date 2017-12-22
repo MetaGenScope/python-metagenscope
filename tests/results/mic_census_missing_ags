@@ -1,0 +1,12 @@
+Parameters
+metagenome:	/tmp/1171357.1.standard.q/5080-CEM-0001.MetaSUB_UK2017__5080-CEM-0001__hudson_alpha__seq2end_not-host_1.fastq.gz,/tmp/1171357.1.standard.q/5080-CEM-0001.MetaSUB_UK2017__5080-CEM-0001__hudson_alpha__seq2end_not-host_2.fastq.gz
+reads_sampled:	2000000
+trimmed_length:	150
+min_quality:	-5
+mean_quality:	-5
+filter_dups:	False
+max_unknown:	100
+
+Results
+total_bases:	1709470396
+genome_equivalents:	24.2430249022
