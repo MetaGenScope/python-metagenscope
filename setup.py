@@ -7,9 +7,9 @@ dependencies = ['click', 'requests', 'configparser']
 
 setup(
     name='metagenscope',
-    version='0.1.0',
+    version='0.1.1',
     url='https://github.com/bchrobot/python-metagenscope',
-    license='BSD',
+    license='MIT',
     author='Benjamin Chrobot',
     author_email='benjamin.chrobot@alum.mit.edu',
     description='MetaGenScope-CLI is used to upload data sets to the MetaGenScope web platform.',
@@ -29,7 +29,7 @@ setup(
         'Development Status :: 3 - Alpha',
         'Environment :: Console',
         'Intended Audience :: Developers',
-        'License :: OSI Approved :: BSD License',
+        'License :: OSI Approved :: MIT License',
         'Operating System :: POSIX',
         'Operating System :: MacOS',
         'Operating System :: Unix',
