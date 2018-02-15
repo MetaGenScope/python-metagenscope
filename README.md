@@ -20,6 +20,10 @@ To use it:
 
     $ metagenscope --help
 
+## Development
+
+MetaGenScope uses the GitFlow branching strategy along with Pull Requests for code reviews. Check out [this post](https://devblog.dwarvesf.com/post/git-best-practices/) by the Dwarves Foundation for more information.
+
 ## Contributing
 
 Please read `CONTRIBUTING.md` for details on our code of conduct, and the process for submitting pull requests to us.
