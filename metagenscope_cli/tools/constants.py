@@ -1,4 +1,30 @@
-"""MetaGenScope CLI constants."""
+"""MetaGenScope CLI constants.
 
+N.B. tool types and file types are defined in the
+metasub cap and stored in datasuper.
+"""
+
+# tool types
+KRAKEN = 'kraken_taxonomy_profiling'
+METAPHLAN2 = 'metaphlan2_taxonomy_profiling'
+HMP_SITES = 'hmp_site_dists'
+MICROBE_CENSUS = 'microbe_census'
+SHORTBRED_AMRS = 'shortbred_amr_profiling'
+RESISTOME_AMRS = 'resistome_amrs'
+READ_CLASS_PROPS = 'read_classification_proportions'
+READ_STATS = 'read_stats'
+MICROBE_DIRECTORY = 'microbe_directory_annotate'
+ALPHA_DIVERSITY = 'alpha_diversity_stats'
+HUMANN2 = 'humann2_functional_profiling'
+HUMANN2_NORMALIZED = 'humann2_normalize_genes'
+METHYLS = 'align_to_methyltransferases'
+VFDB = 'vfdb_quantify'
+
+
+# other
 TAXON_KEY = 'taxon'
 ABUNDANCE_KEY = 'abundance'
+
+AGS_KEY = 'average_genome_size'
+TOTAL_BASES_KEY = 'total_bases'
+GENOME_EQUIVALENTS_KEY = 'genome_equivalents'
