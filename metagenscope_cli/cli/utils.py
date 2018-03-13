@@ -10,13 +10,16 @@ from metagenscope_cli.network.uploader import Uploader
 def handle_uploader_warnings(uploader, verbose=False):
     if uploader.warnings() == 'unknown_token':
         if click.confirm('Store token for future use (overwrites existing)?'):
-            config.set_token(uploader.auth)
-            uploader.supress_warnings()
+            try:
+                config.set_token(str(uploader.auth))
+            except AttributeError:
+                config.set_token(str(uploader.knex.auth))
+            uploader.suppress_warnings()
         elif click.confirm('Continue with provided token?', abort=True):
-            uploader.supress_warnings()
+            uploader.suppress_warnings()
     elif uploader.warnings() == 'no_auth':
         click.secho('Warning: Skipping authentication', fg='yellow')
-        uploader.supress_warnings()
+        uploader.suppress_warnings()
     return uploader
 
 
