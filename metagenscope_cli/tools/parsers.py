@@ -11,7 +11,8 @@ def jloads(fname):
 
 
 def parse(tool_type, schema):
-    schema = {k: v for k, v in schema}
+    if type(schema) is not dict:
+        schema = {k: v for k, v in schema}
     if tool_type == [KRAKEN, METAPHLAN2]:
         return parse_mpa(schema['mpa'])
     elif tool_type == HMP_SITES:

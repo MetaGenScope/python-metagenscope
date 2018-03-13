@@ -1,7 +1,7 @@
 from metagenscope_cli.config import config
 from .token_auth import TokenAuth
 import requests
-import datetime
+from datetime import datetime
 
 
 class UploadAuthenticationError(Exception):
@@ -63,7 +63,15 @@ class Uploader:
         response.raise_for_status()
         return response
 
-    def upload_sample_result(self, sample_name, result_name, result_type, data):
+    def _create_upload_group(self):
+        curtime = datetime.now().isoformat()
+        upload_group_name = 'upload_group_{}'.format(curtime)
+        response = self.create_sample_group(upload_group_name)
+        self.upload_group_id = response['uuid']
+        return self.upload_group_id
+
+    def upload_sample_result(self, sample_name,
+                             result_name, result_type, data):
         sample_uuid = self._get_sample_uuid(sample_name, strict=True)
         payload = {
             'result_name': result_name,
@@ -73,18 +81,21 @@ class Uploader:
         endpoint = f'/api/v1/samples/{sample_uuid}/{result_type}'
         return self._upload_payload(endpoint, payload)
 
-    def create_sample(self, sample_name, metadata={}):
-        payload = {"name": sample_name,
-                   "metadata": metadata
-                   }
+    def create_sample(self, sample_name, group_id=None, metadata={}):
+        if group_id is None:
+            self._create_upload_group()
+            group_id = self.upload_group_id
+        payload = {
+            "sample_group_uuid": group_id,
+            "name": sample_name,
+            "metadata": metadata
+        }
         response = self._upload_payload('/api/v1/samples', payload)
         sample_uuid = response['uuid']
         self._cache_sample_uuid(sample_name, sample_uuid)
         return response
 
-    def create_sample_group(self,
-                            group_name,
-                            subgroups=[],
-                            sample_names=[],
-                            result_names=[]):
-        assert False
+    def create_sample_group(self, group_name):
+        payload = {"name": group_name}
+        response = self._upload_payload('/api/v1/sample_groups', payload)
+        return response
