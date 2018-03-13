@@ -1,9 +1,13 @@
 from .constants import *
-from json import loads as jloads
+from json import loads 
 
 
 class UnparsableError(Exception):
     pass
+
+
+def jloads(fname):
+    return loads(open(fname).read())
 
 
 def parse(tool_type, schema):
@@ -36,7 +40,7 @@ def parse(tool_type, schema):
         normTbl = parse_humann2_table(schema['read_depth_norm_genes'])
         agsTbl = parse_humann2_table(schema['ags_norm_genes'])
         return {'read_norm': normTbl, 'ags_norm': agsTbl}
-    elif tool_type in[METHYLS, VFDB]:
+    elif tool_type in [METHYLS, VFDB]:
         return parse_gene_table(schema['table'])
     else:
         raise UnparsableError('{}, {}'.format(tool_type, file_type))
