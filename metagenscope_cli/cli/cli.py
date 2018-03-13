@@ -3,6 +3,7 @@ import click
 import datasuper as ds
 from .utils import *
 from metagenscope_cli.tools.parsers import parse, UnparsableError
+from metagenscope_cli.network import Knex, Uploader
 
 
 @click.group()
@@ -11,7 +12,31 @@ def main():
     pass
 
 
-@click.command()
+@main.command()
+@click.option('-u', '--url')
+@click.argument('user_email')
+@click.argument('password')
+def login(url, user_email, password):
+    knex = Knex(url).suppress_warnings()
+    payload = {
+        'email': user_email,
+        'password': password
+    }
+    response = knex.upload_payload('/api/v1/auth/login', payload)
+    print(response.json()['auth_token'])
+
+
+@main.command()
+@click.option('-u', '--url')
+@click.option('-a', '--auth', default=None)
+def status(url, auth):
+    knex = Knex(url, auth=auth)
+    handle_uploader_warnings(knex)
+    response = knex.get('/api/v1/auth/status')
+    print(response.json())
+
+
+@main.command()
 @click.option('-u', '--url')
 @click.option('-a', '--auth', default=None)
 @click.option('-v', '--verbose', default=False)
@@ -35,7 +60,7 @@ def upload(url, auth, verbose):
                 pass
 
 
-@click.command()
+@main.command()
 @click.option('-u', '--url')
 @click.option('-a', '--auth', default=None)
 @click.option('-v', '--verbose', default=False)
@@ -60,7 +85,7 @@ def upload_files(url, auth, verbose, result_files):
     for rfile in result_files:
         sname = getsname(rfile)
         rtype = getrtype(rfile)
-        ftype = getfiletype(fname)
+        ftype = getfiletype(rfile)
 
         try:
             try:
@@ -70,8 +95,8 @@ def upload_files(url, auth, verbose, result_files):
         except KeyError:
             rfiles[sname] = {rtype: {ftype: rfile}}
 
-    for sname, rtypeDict in snames.items():
-        response = uploader.create_sample(sample.name)
+    for sname, rtypeDict in rfiles.items():
+        response = uploader.create_sample(sname)
         handle_uploader_response(response, verbose=verbose)
 
         for rtype, schema in rtypeDict.items():

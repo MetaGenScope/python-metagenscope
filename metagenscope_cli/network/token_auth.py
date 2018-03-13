@@ -15,3 +15,6 @@ class TokenAuth(AuthBase):
         """Add authentication header to request."""
         request.headers['X-API-TOKEN'] = self.token
         return request
+
+    def __str__(self):
+        return self.token
