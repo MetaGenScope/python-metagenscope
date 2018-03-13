@@ -42,40 +42,88 @@ def parse(tool_type, schema):
         raise UnparsableError('{}, {}'.format(tool_type, file_type))
 
 
+def tokenize(file_name, skip=0, sep='\t', skipchar='#'):
+    with open(file_name) as f:
+        for _ in range(skip):
+            f.readline()
+        for line in f:
+            stripped = line.strip()
+            if stripped[0] == skipchar:
+                continue
+            tkns = stripped.split(sep)
+            yield tkns
+
+
+def parse_key_val_file(filename,
+                       skip=0, skipchar='#', sep='\t',
+                       kind=float, val_column=1):
+    out = {tkns[0]: kind(tkns[val_column])
+           for tkns in tokenize(filename,
+                                skip=skip, sep=sep, skipchar=skipchar)
+           }
+    return out
+
+
 def parse_shortbred_table(table_file):
     pass
 
 
 def parse_resistome_tables(gene_table, group_table,
                            classus_table, mech_table):
-    pass
+    out = {'genes': parse_key_val_file(gene_table, skip=1, kind=int),
+           'groups': parse_key_val_file(group_table, skip=1, kind=int),
+           'classus': parse_key_val_file(classus_table, skip=1, kind=int),
+           'mechanism': parse_key_val_file(mech_table, skip=1, kind=int),
+           }
+    return out
 
 
 def parse_humann2_table(table_file):
-    pass
+    data = [{GENE_KEY: gene, ABUNDANCE_KEY: abund}
+            for gene, abund in parse_key_val_file(table_file)]
+    return data
 
 
 def parse_humann2_pathways(path_abunds, path_covs):
-    pass
+    path_abunds = parse_key_val_file(path_abunds),
+    path_covs = parse_key_val_file(path_covs)
+    data = []
+    for path, abund in path_abunds.items():
+        cov = path_covs[path]
+        row = {
+            PATHWAY_KEY: path,
+            ABUNDANCE_KEY: abund,
+            COVERAGE_KEY: cov
+        }
+        data.append(row)
+    return data
 
 
-def parse_gene_table(gene_Table):
-    pass
+def parse_gene_table(gene_table):
+    '''Return a parsed gene quantification table.'''
+    with open(gene_table) as gt:
+        gene_names = gt.readline().strip().split(',')[1:]
+        rpks = gt.readline().strip().split(',')[1:]
+        rpkms = gt.readline().strip().split(',')[1:]
+        rpkmgs = gt.readline().strip().split(',')[1:]
+
+    data = []
+    for i, gene_name in enumerate(gene_names):
+        row = {
+            GENE_ID: gene_name,
+            RPK_KEY: rpks[i],
+            RPKM_KEY: rpkms[i],
+            RPKMG_KEY: rpkmgs[i],
+        }
+        data.append(row)
+    return data
 
 
 def parse_mpa(mpa_file):
     data = []
-    with open(mpa_file) as mf:
-        for line in mf:
-            line = line.strip()
-            if line[0] == '#':
-                continue
-            taxa, abund = line.split('\t')
-            row = {
-                TAXON_KEY: parts[taxon_column_index],
-                ABUNDANCE_KEY: float(parts[abundance_column_index]),
-            }
-            data.append(row)
+    for taxa, val in parse_key_val_file(mpa_file):
+        row = {TAXON_KEY: taxa, ABUNDANCE_KEY: val}
+        data.append(row)
     return data
 
 

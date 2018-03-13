@@ -28,3 +28,16 @@ ABUNDANCE_KEY = 'abundance'
 AGS_KEY = 'average_genome_size'
 TOTAL_BASES_KEY = 'total_bases'
 GENOME_EQUIVALENTS_KEY = 'genome_equivalents'
+
+
+# humann2
+PATHWAY_KEY = 'pathway'
+ABUNDANCE_KEY = 'abundance'
+COVERAGE_KEY = 'coverage'
+GENE_KEY = 'gene_family'
+
+# Gene Quantification
+GENE_ID = 'gene_name'
+RPK_KEY = 'RPK'
+RPKM_KEY = 'RPKM'
+RPKMG_KEY = 'RPKG'
