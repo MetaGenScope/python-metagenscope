@@ -21,7 +21,7 @@ class Uploader:
         self.sample_uuid_map[sample_name] = sample_uuid
 
     def _cache_sample_uuids(self):
-        assert False
+        self.sample_uuid_map = {}
 
     def _get_sample_uuid(self, sample_name, strict=False):
         if self.sample_uuid_map is None:
@@ -37,7 +37,7 @@ class Uploader:
         curtime = datetime.now().isoformat()
         upload_group_name = 'upload_group_{}'.format(curtime)
         response = self.create_sample_group(upload_group_name)
-        self.upload_group_id = response['uuid']
+        self.upload_group_id = response.json()['data']['sample_group']['uuid']
         return self.upload_group_id
 
     def upload_sample_result(self, sample_name,
@@ -61,7 +61,7 @@ class Uploader:
             "metadata": metadata
         }
         response = self.knex.upload_payload('/api/v1/samples', payload)
-        sample_uuid = response['uuid']
+        sample_uuid = response.json()['data']['sample']['uuid']
         self._cache_sample_uuid(sample_name, sample_uuid)
         return response
 

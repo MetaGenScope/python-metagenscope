@@ -51,10 +51,10 @@ def upload(url, auth, verbose):
         for result in sample.results():
             try:
                 data = parse(result.resultType(), result.files())
-                response = uploader.upload_data(sample.name,
-                                                result.name,
-                                                result.resultType(),
-                                                data)
+                response = uploader.upload_sample_result(sample.name,
+                                                         result.name,
+                                                         result.resultType(),
+                                                         data)
                 handle_uploader_response(response, verbose=verbose)
             except UnparsableError:
                 pass
@@ -97,15 +97,15 @@ def upload_files(url, auth, verbose, result_files):
 
     for sname, rtypeDict in rfiles.items():
         response = uploader.create_sample(sname)
-        handle_uploader_response(response, verbose=verbose)
+        #handle_uploader_response(response, verbose=verbose)
 
         for rtype, schema in rtypeDict.items():
             try:
                 data = parse(rtype, schema)
-                response = uploader.upload_data(sname,
-                                                getrname(rfile),
-                                                rtype,
-                                                data)
-                handle_uploader_response(response, verbose=verbose)
+                response = uploader.upload_sample_result(sname,
+                                                         getrname(rfile),
+                                                         rtype,
+                                                         data)
+                #handle_uploader_response(response, verbose=verbose)
             except UnparsableError:
                 pass

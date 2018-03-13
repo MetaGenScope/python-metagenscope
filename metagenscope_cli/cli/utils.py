@@ -23,7 +23,7 @@ def handle_uploader_warnings(uploader, verbose=False):
     return uploader
 
 
-def handle_upload_response(request, verbose=False):
+def handle_uploader_response(request, verbose=False):
     if request.status_code == requests.codes['created']:
         click.secho('Success: submitted result.', fg='green')
     else:

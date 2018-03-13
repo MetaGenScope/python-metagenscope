@@ -13,7 +13,7 @@ class TokenAuth(AuthBase):
 
     def __call__(self, request):
         """Add authentication header to request."""
-        request.headers['X-API-TOKEN'] = self.token
+        request.headers['Authorization'] = f'Bearer {self.token}'
         return request
 
     def __str__(self):
