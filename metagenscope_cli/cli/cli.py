@@ -107,5 +107,5 @@ def upload_files(url, auth, verbose, result_files):
                                                          rtype,
                                                          data)
                 #handle_uploader_response(response, verbose=verbose)
-            except UnparsableError:
-                pass
+            except UnparsableError as ue:
+                raise

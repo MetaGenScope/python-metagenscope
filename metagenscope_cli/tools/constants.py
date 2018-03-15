@@ -38,6 +38,6 @@ GENE_KEY = 'gene_family'
 
 # Gene Quantification
 GENE_ID = 'gene_name'
-RPK_KEY = 'RPK'
-RPKM_KEY = 'RPKM'
-RPKMG_KEY = 'RPKG'
+RPK_KEY = 'rpk'
+RPKM_KEY = 'rpkm'
+RPKMG_KEY = 'rpkmg'

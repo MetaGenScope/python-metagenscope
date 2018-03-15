@@ -1,6 +1,7 @@
 from metagenscope_cli.config import config
 from .token_auth import TokenAuth
 import requests
+from sys import stderr
 
 
 class ServerAuthenticationError(Exception):
@@ -42,7 +43,14 @@ class Knex:
                                  headers=self.headers,
                                  auth=self.auth,
                                  json=payload)
-        response.raise_for_status()
+        try:
+            response.raise_for_status()
+        except Exception:
+            try:
+                print(response.json(), file=stderr)
+            except Exception:
+                pass
+            raise
         return response
 
     def get(self, endpoint):

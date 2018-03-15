@@ -1,5 +1,24 @@
 from datetime import datetime
 from .knex import Knex
+import json
+
+
+def json_head(obj, n=5):
+    if type(obj) == dict:
+        out = {}
+        for k, v in obj.items():
+            if len(out) == n:
+                break
+            out[k] = json_head(v, n=n)
+    elif type(obj) == list:
+        out = []
+        for v in obj:
+            if len(out) == n:
+                break
+            out.append(json_head(v, n=n))
+    else:
+        return obj
+    return out
 
 
 class Uploader:
@@ -48,6 +67,8 @@ class Uploader:
             'tool_name': result_type,
             'data': data,
         }
+        print(json.dumps(json_head(payload), indent=4))
+        print(len(str(payload)))
         endpoint = f'/api/v1/samples/{sample_uuid}/{result_type}'
         return self.knex.upload_payload(endpoint, payload)
 
