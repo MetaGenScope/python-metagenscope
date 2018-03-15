@@ -4,6 +4,8 @@ import datasuper as ds
 from .utils import *
 from metagenscope_cli.tools.parsers import parse, UnparsableError
 from metagenscope_cli.network import Knex, Uploader
+from sys import stderr
+from requests.exceptions import HTTPError
 
 
 @click.group()
@@ -63,9 +65,10 @@ def upload(url, auth, verbose):
 @main.command()
 @click.option('-u', '--url')
 @click.option('-a', '--auth', default=None)
+@click.option('-g', '--group', default=None)
 @click.option('-v', '--verbose', default=False)
 @click.argument('result_files', nargs=-1)
-def upload_files(url, auth, verbose, result_files):
+def upload_files(url, auth, group, verbose, result_files):
     uploader = Uploader(url, auth=auth)
     handle_uploader_warnings(uploader, verbose=verbose)
 
@@ -96,7 +99,7 @@ def upload_files(url, auth, verbose, result_files):
             rfiles[sname] = {rtype: {ftype: rfile}}
 
     for sname, rtypeDict in rfiles.items():
-        response = uploader.create_sample(sname)
+        response = uploader.create_sample(sname, group_id=group)
         #handle_uploader_response(response, verbose=verbose)
 
         for rtype, schema in rtypeDict.items():
@@ -109,3 +112,5 @@ def upload_files(url, auth, verbose, result_files):
                 #handle_uploader_response(response, verbose=verbose)
             except UnparsableError as ue:
                 raise
+            except HTTPError:
+                print('http error', file=stderr)
