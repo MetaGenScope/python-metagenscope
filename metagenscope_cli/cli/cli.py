@@ -1,11 +1,15 @@
 """Use to upload data sets to the MetaGenScope web platform."""
+
+from sys import stderr
+
 import click
 import datasuper as ds
-from .utils import *
+from requests.exceptions import HTTPError
+
 from metagenscope_cli.tools.parsers import parse, UnparsableError
 from metagenscope_cli.network import Knex, Uploader
-from sys import stderr
-from requests.exceptions import HTTPError
+
+from .utils import handle_uploader_warnings, handle_uploader_response
 
 
 @click.group()
@@ -86,47 +90,45 @@ def upload(url, auth, verbose):
 @click.argument('result_files', nargs=-1)
 def upload_files(url, auth, group, verbose, result_files):
     uploader = Uploader(url, auth=auth)
-    handle_uploader_warnings(uploader, verbose=verbose)
+    handle_uploader_warnings(uploader)
 
-    def getsname(fname):
-        return fname.split('/')[-1].split('.')[0]
+    def get_sample_name(file_name):
+        return file_name.split('/')[-1].split('.')[0]
 
-    def getrtype(fname):
-        return fname.split('/')[-1].split('.')[1]
+    def get_result_type(file_name):
+        return file_name.split('/')[-1].split('.')[1]
 
-    def getfiletype(fname):
-        return fname.split('/')[-1].split('.')[2]
+    def get_file_type(file_name):
+        return file_name.split('/')[-1].split('.')[2]
 
-    def getrname(fname):
-        return getsname(fname) + '::' + getrtype(fname)
+    def get_result_name(file_name):
+        return get_sample_name(file_name) + '::' + get_result_type(file_name)
 
-    rfiles = {}
-    for rfile in result_files:
-        sname = getsname(rfile)
-        rtype = getrtype(rfile)
-        ftype = getfiletype(rfile)
+    result_files = {}
+    for result_file in result_files:
+        sample_name = get_sample_name(result_file)
+        result_type = get_result_type(result_file)
+        file_type = get_file_type(result_file)
 
         try:
             try:
-                rfiles[sname][rtype][ftype] = rfile
+                result_files[sample_name][result_type][file_type] = result_file
             except KeyError:
-                rfiles[sname][rtype] = {ftype: rfile}
+                result_files[sample_name][result_type] = {file_type: result_file}
         except KeyError:
-            rfiles[sname] = {rtype: {ftype: rfile}}
+            result_files[sample_name] = {result_type: {file_type: result_file}}
 
-    for sname, rtypeDict in rfiles.items():
-        response = uploader.create_sample(sname, group_id=group)
-        #handle_uploader_response(response, verbose=verbose)
+    for sample_name, result_type_dict in result_files.items():
+        response = uploader.create_sample(sample_name, group_id=group)
 
-        for rtype, schema in rtypeDict.items():
+        for result_type, schema in result_type_dict.items():
             try:
-                data = parse(rtype, schema)
-                response = uploader.upload_sample_result(sname,
-                                                         getrname(rfile),
-                                                         rtype,
+                data = parse(result_type, schema)
+                response = uploader.upload_sample_result(sample_name,
+                                                         get_result_name(result_file),
+                                                         result_type,
                                                          data)
-                #handle_uploader_response(response, verbose=verbose)
-            except UnparsableError as ue:
+            except UnparsableError:
                 raise
             except HTTPError:
                 print('http error', file=stderr)

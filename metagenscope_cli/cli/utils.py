@@ -1,13 +1,12 @@
-import json
+"""Utilities for MetaGenScope CLI."""
 
 import click
 import requests
 
 from metagenscope_cli.config import config
-from metagenscope_cli.network.uploader import Uploader
 
 
-def handle_uploader_warnings(uploader, verbose=False):
+def handle_uploader_warnings(uploader):
     if uploader.warnings() == 'unknown_token':
         if click.confirm('Store token for future use (overwrites existing)?'):
             try:
@@ -36,16 +35,3 @@ def handle_uploader_response(request, verbose=False):
                 # Invalid JSON in response
                 for line in request.text.splitlines():
                     click.secho("    {0}".format(line), fg='red')
-
-
-def deliver_payload(payload, url, auth=None, verbose=False):
-    """Deliver a payload to MetaGenScope backend."""
-    uploader = Uploader(url, auth=auth)
-    handle_uploader_warnings(uploader, verbose=verbose)
-
-    click.echo('Submitting {0} payload.'.format(payload['tool_name']))
-    if verbose:
-        click.echo(json.dumps(payload))
-    request = uploader.upload(payload)
-
-    handle_upload_response(request, verbose=verbose)

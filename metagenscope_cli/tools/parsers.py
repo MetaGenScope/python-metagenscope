@@ -1,18 +1,25 @@
-from .constants import *
+"""Parsers for different Tool Result types."""
+
 from json import loads
+
 import click
+
+from .constants import *
 
 
 class UnparsableError(Exception):
+    """Custom exception signaling an unknown Tool Result type."""
     pass
 
 
 def jloads(fname):
+    """Load JSON file into python dictionary."""
     return loads(open(fname).read())
 
 
-def parse(tool_type, schema):
-    if type(schema) is not dict:
+def parse(tool_type, schema):  # pylint: disable=too-many-return-statements,too-many-branches
+    """Parse schema as tool_type."""
+    if not isinstance(schema, dict):
         schema = {k: v for k, v in schema}
     if tool_type in [KRAKEN, METAPHLAN2]:
         return parse_mpa(schema['mpa'])
@@ -34,18 +41,18 @@ def parse(tool_type, schema):
     elif tool_type == ALPHA_DIVERSITY:
         return jloads(schema['json'])
     elif tool_type == HUMANN2:
-        geneTbl = parse_humann2_table(schema['genes'])
-        pathTbl = parse_humann2_pathways(schema['path_abunds'],
-                                         schema['path_cov'])
-        return {'genes': geneTbl, 'pathways': pathTbl}
+        gene_table = parse_humann2_table(schema['genes'])
+        path_table = parse_humann2_pathways(schema['path_abunds'],
+                                            schema['path_cov'])
+        return {'genes': gene_table, 'pathways': path_table}
     elif tool_type == HUMANN2_NORMALIZED:
-        normTbl = parse_humann2_table(schema['read_depth_norm_genes'])
-        agsTbl = parse_humann2_table(schema['ags_norm_genes'])
-        return {'read_norm': normTbl, 'ags_norm': agsTbl}
+        norm_table = parse_humann2_table(schema['read_depth_norm_genes'])
+        ags_table = parse_humann2_table(schema['ags_norm_genes'])
+        return {'read_norm': norm_table, 'ags_norm': ags_table}
     elif tool_type in [METHYLS, VFDB]:
         return {'genes': parse_gene_table(schema['table'])}
     else:
-        raise UnparsableError('{}, {}'.format(tool_type, schema))
+        raise UnparsableError(f'{tool_type}, {schema}')
 
 
 def scrub_keys(key):
@@ -53,10 +60,11 @@ def scrub_keys(key):
 
 
 def tokenize(file_name, skip=0, sep='\t', skipchar='#'):
-    with open(file_name) as f:
+    """Tokenize a tabular file."""
+    with open(file_name) as file:
         for _ in range(skip):
-            f.readline()
-        for line in f:
+            file.readline()
+        for line in file:
             stripped = line.strip()
             if stripped[0] == skipchar:
                 continue
@@ -68,10 +76,9 @@ def tokenize(file_name, skip=0, sep='\t', skipchar='#'):
 def parse_key_val_file(filename,
                        skip=0, skipchar='#', sep='\t',
                        kind=float, key_column=0, val_column=1):
-    out = {scrub_keys(tkns[key_column]): kind(tkns[val_column])
-           for tkns in tokenize(filename,
-                                skip=skip, sep=sep, skipchar=skipchar)
-           }
+    tokens = tokenize(filename, skip=skip, sep=sep, skipchar=skipchar)
+    out = {scrub_keys(token[key_column]): kind(token[val_column])
+           for token in tokens}
     return out
 
 
@@ -81,28 +88,32 @@ def parse_shortbred_table(table_file):
 
 def parse_resistome_tables(gene_table, group_table,
                            classus_table, mech_table):
-    out = {'genes': parse_key_val_file(gene_table,
-                                       key_column=1, val_column=2,
-                                       skip=1, kind=int),
-           'groups': parse_key_val_file(group_table,
+    result = {
+        'genes': parse_key_val_file(gene_table,
+                                    key_column=1, val_column=2,
+                                    skip=1, kind=int),
+        'groups': parse_key_val_file(group_table,
+                                     key_column=1, val_column=2,
+                                     skip=1, kind=int),
+        'classus': parse_key_val_file(classus_table,
+                                      key_column=1, val_column=2,
+                                      skip=1, kind=int),
+        'mechanism': parse_key_val_file(mech_table,
                                         key_column=1, val_column=2,
                                         skip=1, kind=int),
-           'classus': parse_key_val_file(classus_table,
-                                         key_column=1, val_column=2,
-                                         skip=1, kind=int),
-           'mechanism': parse_key_val_file(mech_table,
-                                           key_column=1, val_column=2,
-                                           skip=1, kind=int),
-           }
-    return out
+    }
+
+    return result
 
 
 def parse_humann2_table(table_file):
+    """Ingest Humann2 table file."""
     data = parse_key_val_file(table_file)
     return data
 
 
 def parse_humann2_pathways(path_abunds, path_covs):
+    """Ingest Humann2 pathways results file."""
     path_abunds = parse_key_val_file(path_abunds)
     path_covs = parse_key_val_file(path_covs)
     data = {}
@@ -117,12 +128,12 @@ def parse_humann2_pathways(path_abunds, path_covs):
 
 
 def parse_gene_table(gene_table):
-    '''Return a parsed gene quantification table.'''
-    with open(gene_table) as gt:
-        gene_names = gt.readline().strip().split(',')[1:]
-        rpks = gt.readline().strip().split(',')[1:]
-        rpkms = gt.readline().strip().split(',')[1:]
-        rpkmgs = gt.readline().strip().split(',')[1:]
+    """Return a parsed gene quantification table."""
+    with open(gene_table) as file:
+        gene_names = file.readline().strip().split(',')[1:]
+        rpks = file.readline().strip().split(',')[1:]
+        rpkms = file.readline().strip().split(',')[1:]
+        rpkmgs = file.readline().strip().split(',')[1:]
 
     data = {}
     for i, gene_name in enumerate(gene_names):
@@ -136,24 +147,18 @@ def parse_gene_table(gene_table):
 
 
 def parse_mpa(mpa_file):
+    """Ingest MPA results file."""
     return {'taxa': parse_key_val_file(mpa_file)}
-    '''
-    data = []
-    for taxa, val in parse_key_val_file(mpa_file).items():
-        row = {TAXON_KEY: taxa, ABUNDANCE_KEY: val}
-        data.append(row)
-    return data
-    '''
 
 
 def parse_microbe_census(input_file):
     """Ingest microbe census results file."""
     data = {}
-    with open(input_file) as f:
-        for line in f:
+    with open(input_file) as file:
+        for line in file:
             parts = line.strip().split()
             for key in [AGS_KEY, TOTAL_BASES_KEY, GENOME_EQUIVALENTS_KEY]:
-                if len(parts) > 0 and key in parts[0]:
+                if parts and key in parts[0]:
                     if key == TOTAL_BASES_KEY:
                         data[key] = int(parts[1])
                     else:

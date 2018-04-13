@@ -1,16 +1,24 @@
-from metagenscope_cli.config import config
-from .token_auth import TokenAuth
-import requests
+"""Knex wraps requests to handle MetaGenScope network tasks."""
+
 from sys import stderr
+
+import requests
+
+from metagenscope_cli.config import config
+
+from .token_auth import TokenAuth
 
 
 class ServerAuthenticationError(Exception):
+    """Exception raised by bad authentication."""
     pass
 
 
 class Knex:
+    """Knex wraps requests to handle MetaGenScope network tasks."""
 
     def __init__(self, url, headers=None, auth=None):
+        """Instantiate Knex instance."""
         self.url = url
         self.headers = headers
         if self.headers is None:
@@ -45,10 +53,10 @@ class Knex:
                                  json=payload)
         try:
             response.raise_for_status()
-        except Exception:
+        except Exception:  # pylint: disable=broad-except
             try:
                 print(response.json(), file=stderr)
-            except Exception:
+            except Exception:  # pylint: disable=broad-except
                 pass
             raise
         return response
@@ -58,7 +66,7 @@ class Knex:
             raise ServerAuthenticationError(self.auth_warn)
         url = self.url + endpoint
         response = requests.get(url,
-                                 headers=self.headers,
-                                 auth=self.auth)
+                                headers=self.headers,
+                                auth=self.auth)
         response.raise_for_status()
         return response
