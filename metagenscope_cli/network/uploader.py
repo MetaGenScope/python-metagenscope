@@ -26,6 +26,7 @@ class Uploader:
     def __init__(self, url, headers=None, auth=None):
         self.knex = Knex(url, headers=headers, auth=auth)
         self.sample_uuid_map = None
+        self.upload_group_id = None
 
     def warnings(self):
         return self.knex.warnings()
@@ -53,6 +54,8 @@ class Uploader:
             return sample_name
 
     def _create_upload_group(self):
+        if self.upload_group_id is not None:
+            return self.upload_group_id
         curtime = datetime.now().isoformat()
         upload_group_name = 'upload_group_{}'.format(curtime)
         response = self.create_sample_group(upload_group_name)
@@ -67,8 +70,6 @@ class Uploader:
             'tool_name': result_type,
             'data': data,
         }
-        print(json.dumps(json_head(payload), indent=4))
-        print(len(str(payload)))
         endpoint = f'/api/v1/samples/{sample_uuid}/{result_type}'
         return self.knex.upload_payload(endpoint, payload)
 

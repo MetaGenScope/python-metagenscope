@@ -16,6 +16,22 @@ def main():
 
 @main.command()
 @click.option('-u', '--url')
+@click.argument('username')
+@click.argument('user_email')
+@click.argument('password')
+def register(url, username, user_email, password):
+    knex = Knex(url).suppress_warnings()
+    payload = {
+        'username': username,
+        'email': user_email,
+        'password': password
+    }
+    response = knex.upload_payload('/api/v1/auth/register', payload)
+    print(response.json())
+
+
+@main.command()
+@click.option('-u', '--url')
 @click.argument('user_email')
 @click.argument('password')
 def login(url, user_email, password):
@@ -25,7 +41,7 @@ def login(url, user_email, password):
         'password': password
     }
     response = knex.upload_payload('/api/v1/auth/login', payload)
-    print(response.json()['auth_token'])
+    print(response.json()['data']['auth_token'])
 
 
 @main.command()
