@@ -5,6 +5,7 @@ from functools import wraps
 
 import click
 import requests
+from requests.exceptions import HTTPError
 
 from metagenscope_cli.config import config
 from metagenscope_cli.network import Knex, Uploader
@@ -26,7 +27,25 @@ def batch_upload(uploader, samples, group_uuid=None):
         upload_group_name = f'upload_group_{current_time}'
         group_uuid = uploader.create_sample_group(upload_group_name)
 
-    uploader.upload_all_results(group_uuid, samples)
+    try:
+        results = uploader.upload_all_results(group_uuid, samples)
+    except HTTPError as error:
+        click.echo('Could not create Sample', err=True)
+        click.echo(error, err=True)
+
+    if results:
+        click.echo('Upload results:')
+        for result in results:
+            sample_uuid = result['sample_uuid']
+            sample_name = result['sample_name']
+            result_type = result['result_type']
+            if result['type'] == 'error':
+                exception = result['exception']
+                click.secho(f'  - {sample_name} ({sample_uuid}): {result_type}',
+                            fg='red', err=True)
+                click.secho(f'    {exception}', fg='red', err=True)
+            else:
+                click.secho(f'  - {sample_name} ({sample_uuid}): {result_type}', fg='green')
 
 
 def add_authorization():

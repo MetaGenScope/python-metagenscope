@@ -35,11 +35,24 @@ class Uploader:
         """Upload all samples and results to group."""
         # TODO: How should this handle failures at each step? Raise if create_sample,
         #       then just catch and collect tool result errors to warn user about?
-        for sample_name, results in samples.items():
+        results = []
+        for sample_name, tool_results in samples.items():
             # TODO: source metadata? Maybe from DataSuper but not files?
             sample_uuid = self.create_sample(sample_name, group_uuid)
 
-            for result in results:
-                result_type = result['result_type']
-                data = result['data']
-                self.upload_sample_result(sample_uuid, result_type, data)
+            for tool_result in tool_results:
+                result_type = tool_result['result_type']
+                data = tool_result['data']
+                result = {
+                    'type': 'success',
+                    'sample_uuid': sample_uuid,
+                    'sample_name': sample_name,
+                    'result_type': result_type,
+                }
+                try:
+                    self.upload_sample_result(sample_uuid, result_type, data)
+                except Exception as exception:
+                    result['type'] = 'error'
+                    result['exception'] = str(exception)
+                results.append(result)
+        return results
