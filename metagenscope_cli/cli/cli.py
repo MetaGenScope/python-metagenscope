@@ -3,6 +3,7 @@
 import click
 from requests.exceptions import HTTPError
 
+from metagenscope_cli.config import config
 from metagenscope_cli.network.authenticator import Authenticator
 from metagenscope_cli.sample_sources.data_super_source import DataSuperSource
 from metagenscope_cli.sample_sources.file_source import FileSource
@@ -43,6 +44,9 @@ def login(host, user_email, password):
     try:
         jwt_token = authenticator.login(user_email, password)
         click.echo(f'JWT Token: {jwt_token}')
+
+        if click.confirm('Store token for future use (overwrites existing)?'):
+            config.set_token(jwt_token)
     except HTTPError as http_error:
         click.echo(f'There was an error logging in: {http_error}', err=True)
 
