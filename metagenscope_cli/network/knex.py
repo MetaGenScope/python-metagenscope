@@ -1,72 +1,41 @@
-"""Knex wraps requests to handle MetaGenScope network tasks."""
-
-from sys import stderr
+"""Knex wraps MetaGenScope requests requiring authentication."""
 
 import requests
 
-from metagenscope_cli.config import config
-
-from .token_auth import TokenAuth
-
-
-class ServerAuthenticationError(Exception):
-    """Exception raised by bad authentication."""
-    pass
+from metagenscope_cli.constants import DEFAULT_HOST
 
 
 class Knex:
-    """Knex wraps requests to handle MetaGenScope network tasks."""
+    """Knex wraps MetaGenScope requests requiring authentication."""
 
-    def __init__(self, url, headers=None, auth=None):
+    def __init__(self, token_auth, host=None, headers=None):
         """Instantiate Knex instance."""
-        self.url = url
+        self.auth = token_auth
+
+        self.host = host
+        if self.host is None:
+            self.host = DEFAULT_HOST
+
         self.headers = headers
         if self.headers is None:
             self.headers = {'Accept': 'application/json'}
 
-        self.auth_warn = None
-        if auth is None:
-            try:
-                auth = config.get_token()
-                self.auth = TokenAuth(auth)
-            except KeyError:  # no stored token
-                self.auth_warn = 'no_auth'
-                self.auth = None
-        else:
-            self.auth = TokenAuth(auth)
-            self.auth_warn = 'unknown_token'
 
-    def warnings(self):
-        return self.auth_warn
-
-    def suppress_warnings(self):
-        self.auth_warn = None
-        return self
-
-    def upload_payload(self, endpoint, payload):
-        if self.auth_warn is not None:
-            raise ServerAuthenticationError(self.auth_warn)
-        url = self.url + endpoint
+    def post(self, endpoint, payload):
+        """Perform authenticated POST request."""
+        url = self.host + endpoint
         response = requests.post(url,
                                  headers=self.headers,
                                  auth=self.auth,
                                  json=payload)
-        try:
-            response.raise_for_status()
-        except Exception:  # pylint: disable=broad-except
-            try:
-                print(response.json(), file=stderr)
-            except Exception:  # pylint: disable=broad-except
-                pass
-            raise
-        return response
+        response.raise_for_status()
+        return response.json()
 
     def get(self, endpoint):
-        if self.auth_warn is not None:
-            raise ServerAuthenticationError(self.auth_warn)
-        url = self.url + endpoint
+        """Perform authenticated GET request."""
+        url = self.host + endpoint
         response = requests.get(url,
                                 headers=self.headers,
                                 auth=self.auth)
         response.raise_for_status()
-        return response
+        return response.json()

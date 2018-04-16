@@ -1,10 +1,10 @@
 """MetaGenScope CLI constants.
 
-N.B. tool types and file types are defined in the
+Note: tool types and file types are defined in the
 metasub cap and stored in datasuper.
 """
 
-# tool types
+# Tool Types
 KRAKEN = 'kraken_taxonomy_profiling'
 METAPHLAN2 = 'metaphlan2_taxonomy_profiling'
 HMP_SITES = 'hmp_site_dists'
@@ -21,7 +21,7 @@ METHYLS = 'align_to_methyltransferases'
 VFDB = 'vfdb_quantify'
 
 
-# other
+# Other
 TAXON_KEY = 'taxon'
 ABUNDANCE_KEY = 'abundance'
 
@@ -30,7 +30,7 @@ TOTAL_BASES_KEY = 'total_bases'
 GENOME_EQUIVALENTS_KEY = 'genome_equivalents'
 
 
-# humann2
+# Humann2
 PATHWAY_KEY = 'pathway'
 ABUNDANCE_KEY = 'abundance'
 COVERAGE_KEY = 'coverage'

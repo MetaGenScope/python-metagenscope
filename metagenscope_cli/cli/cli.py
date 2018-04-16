@@ -1,15 +1,15 @@
 """Use to upload data sets to the MetaGenScope web platform."""
 
-from sys import stderr
-
 import click
-import datasuper as ds
 from requests.exceptions import HTTPError
 
-from metagenscope_cli.tools.parsers import parse, UnparsableError
 from metagenscope_cli.network import Knex, Uploader
+from metagenscope_cli.network.token_auth import TokenAuth
+from metagenscope_cli.network.authenticator import Authenticator
+from metagenscope_cli.sample_sources.data_super_source import DataSuperSource
+from metagenscope_cli.sample_sources.file_source import FileSource
 
-from .utils import handle_uploader_warnings, handle_uploader_response
+from .utils import warn_missing_auth, batch_upload
 
 
 @click.group()
@@ -19,116 +19,94 @@ def main():
 
 
 @main.command()
-@click.option('-u', '--url')
+@click.option('-h', '--host', default=None)
 @click.argument('username')
 @click.argument('user_email')
 @click.argument('password')
-def register(url, username, user_email, password):
-    knex = Knex(url).suppress_warnings()
-    payload = {
-        'username': username,
-        'email': user_email,
-        'password': password
-    }
-    response = knex.upload_payload('/api/v1/auth/register', payload)
-    print(response.json())
+def register(host, username, user_email, password):
+    """Register as a new MetaGenScope user."""
+    authenticator = Authenticator(host=host)
+    try:
+        jwt_token = authenticator.register(username, user_email, password)
+        click.echo(f'JWT Token: {jwt_token}')
+    except HTTPError as http_error:
+        click.echo(f'There was an error with registration: {http_error}', err=True)
+
+    # TODO: ask to persist JWT here
 
 
 @main.command()
-@click.option('-u', '--url')
+@click.option('-h', '--host', default=None)
 @click.argument('user_email')
 @click.argument('password')
-def login(url, user_email, password):
-    knex = Knex(url).suppress_warnings()
-    payload = {
-        'email': user_email,
-        'password': password
-    }
-    response = knex.upload_payload('/api/v1/auth/login', payload)
-    print(response.json()['data']['auth_token'])
+def login(host, user_email, password):
+    """Authenticate as an existing MetaGenScope user."""
+    authenticator = Authenticator(host=host)
+    try:
+        jwt_token = authenticator.login(user_email, password)
+        click.echo(f'JWT Token: {jwt_token}')
+    except HTTPError as http_error:
+        click.echo(f'There was an error logging in: {http_error}', err=True)
+
+    # TODO: ask to persist JWT here
 
 
 @main.command()
-@click.option('-u', '--url')
-@click.option('-a', '--auth', default=None)
-def status(url, auth):
-    knex = Knex(url, auth=auth)
-    handle_uploader_warnings(knex)
+@click.option('-h', '--host', default=None)
+@click.option('-a', '--auth-token', default=None)
+def status(host, auth_token):
+    """Get user status."""
+    try:
+        auth = TokenAuth(jwt_token=auth_token)
+    except KeyError:
+        warn_missing_auth()
+
+    knex = Knex(token_auth=auth, host=host)
     response = knex.get('/api/v1/auth/status')
-    print(response.json())
+    click.echo(response)
 
 
-@main.command()
-@click.option('-u', '--url')
-@click.option('-a', '--auth', default=None)
+@main.group()
+def upload():
+    """Handle different types of uploads."""
+    pass
+
+@upload.command()
+@click.option('-h', '--host', default=None)
+@click.option('-a', '--auth-token', default=None)
+@click.option('-g', '--group', default=None)
 @click.option('-v', '--verbose', default=False)
-def upload(url, auth, verbose):
-    uploader = Uploader(url, auth=auth)
-    handle_uploader_warnings(uploader, verbose=verbose)
-    repo = ds.Repo.loadRepo()
-    for sample in repo.sampleTable.getAll():
-        response = uploader.create_sample(sample.name,
-                                          metadata=sample.metadata)
-        handle_uploader_response(response, verbose=verbose)
-        for result in sample.results():
-            try:
-                data = parse(result.resultType(), result.files())
-                response = uploader.upload_sample_result(sample.name,
-                                                         result.name,
-                                                         result.resultType(),
-                                                         data)
-                handle_uploader_response(response, verbose=verbose)
-            except UnparsableError:
-                pass
+def datasuper(host, auth_token, group, verbose):
+    """Upload all samples from DataSuper repo."""
+    try:
+        auth = TokenAuth(jwt_token=auth_token)
+    except KeyError:
+        warn_missing_auth()
+    knex = Knex(token_auth=auth, host=host)
+    uploader = Uploader(knex=knex)
+
+    sample_source = DataSuperSource()
+    samples = sample_source.get_sample_payloads()
+
+    batch_upload(uploader, samples, group_uuid=group)
 
 
-@main.command()
-@click.option('-u', '--url')
-@click.option('-a', '--auth', default=None)
+@upload.command()
+@click.option('-h', '--host', default=None)
+@click.option('-a', '--auth-token', default=None)
 @click.option('-g', '--group', default=None)
 @click.option('-v', '--verbose', default=False)
 @click.argument('result_files', nargs=-1)
-def upload_files(url, auth, group, verbose, result_files):
-    uploader = Uploader(url, auth=auth)
-    handle_uploader_warnings(uploader)
+def files(host, auth_token, group, verbose, result_files):
+    """Upload all samples from llist of tool result files."""
+    try:
+        auth = TokenAuth(jwt_token=auth_token)
+    except KeyError:
+        warn_missing_auth()
+    knex = Knex(token_auth=auth, host=host)
+    uploader = Uploader(knex=knex)
 
-    def get_sample_name(file_name):
-        return file_name.split('/')[-1].split('.')[0]
+    sample_source = FileSource(files=result_files)
+    samples = sample_source.get_sample_payloads()
 
-    def get_result_type(file_name):
-        return file_name.split('/')[-1].split('.')[1]
-
-    def get_file_type(file_name):
-        return file_name.split('/')[-1].split('.')[2]
-
-    def get_result_name(file_name):
-        return get_sample_name(file_name) + '::' + get_result_type(file_name)
-
-    result_files = {}
-    for result_file in result_files:
-        sample_name = get_sample_name(result_file)
-        result_type = get_result_type(result_file)
-        file_type = get_file_type(result_file)
-
-        try:
-            try:
-                result_files[sample_name][result_type][file_type] = result_file
-            except KeyError:
-                result_files[sample_name][result_type] = {file_type: result_file}
-        except KeyError:
-            result_files[sample_name] = {result_type: {file_type: result_file}}
-
-    for sample_name, result_type_dict in result_files.items():
-        response = uploader.create_sample(sample_name, group_id=group)
-
-        for result_type, schema in result_type_dict.items():
-            try:
-                data = parse(result_type, schema)
-                response = uploader.upload_sample_result(sample_name,
-                                                         get_result_name(result_file),
-                                                         result_type,
-                                                         data)
-            except UnparsableError:
-                raise
-            except HTTPError:
-                print('http error', file=stderr)
+    batch_upload(uploader, samples, group_uuid=group)

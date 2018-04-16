@@ -1,9 +1,29 @@
 """Utilities for MetaGenScope CLI."""
 
+from datetime import datetime
+
 import click
 import requests
 
 from metagenscope_cli.config import config
+
+
+def warn_missing_auth():
+    """Warn user of missing authentication."""
+    click.echo('No authenication means provided!', err=True)
+    click.echo('You must provide an authentication means either by passing '
+               '--auth-token or by persisting a login token to your local '
+               'MetaGenScope configuration file (see metagenscope login help).')
+
+
+def batch_upload(uploader, samples, group_uuid=None):
+    """Batch upload a group of tool results, creating a new group for the upload."""
+    if group_uuid is None:
+        current_time = datetime.now().isoformat()
+        upload_group_name = f'upload_group_{current_time}'
+        group_uuid = uploader.create_sample_group(upload_group_name)
+
+    uploader.upload_all_results(group_uuid, samples)
 
 
 def handle_uploader_warnings(uploader):
