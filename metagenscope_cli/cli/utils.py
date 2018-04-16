@@ -5,7 +5,6 @@ from functools import wraps
 
 import click
 import requests
-from requests.exceptions import HTTPError
 
 from metagenscope_cli.config import config
 from metagenscope_cli.network import Knex, Uploader
