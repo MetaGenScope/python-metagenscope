@@ -1,11 +1,15 @@
 """Utilities for MetaGenScope CLI."""
 
 from datetime import datetime
+from functools import wraps
 
 import click
 import requests
+from requests.exceptions import HTTPError
 
 from metagenscope_cli.config import config
+from metagenscope_cli.network import Knex, Uploader
+from metagenscope_cli.network.token_auth import TokenAuth
 
 
 def warn_missing_auth():
@@ -24,6 +28,28 @@ def batch_upload(uploader, samples, group_uuid=None):
         group_uuid = uploader.create_sample_group(upload_group_name)
 
     uploader.upload_all_results(group_uuid, samples)
+
+
+def add_authorization():
+    """Add authorization to command."""
+    def decorator(command):
+        """Empty wrapper around decoration to be consistent with Click style."""
+        @click.option('-h', '--host', default=None)
+        @click.option('-a', '--auth-token', default=None)
+        @wraps(command)
+        def wrapper(host, auth_token, *args, **kwargs):
+            """Wrap command with authorized Uploader creation."""
+            try:
+                auth = TokenAuth(jwt_token=auth_token)
+            except KeyError:
+                warn_missing_auth()
+
+            knex = Knex(token_auth=auth, host=host)
+            uploader = Uploader(knex=knex)
+
+            return command(uploader, *args, **kwargs)
+        return wrapper
+    return decorator
 
 
 def handle_uploader_warnings(uploader):

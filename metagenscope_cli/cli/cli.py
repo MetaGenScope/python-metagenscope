@@ -3,13 +3,11 @@
 import click
 from requests.exceptions import HTTPError
 
-from metagenscope_cli.network import Knex, Uploader
-from metagenscope_cli.network.token_auth import TokenAuth
 from metagenscope_cli.network.authenticator import Authenticator
 from metagenscope_cli.sample_sources.data_super_source import DataSuperSource
 from metagenscope_cli.sample_sources.file_source import FileSource
 
-from .utils import warn_missing_auth, batch_upload
+from .utils import batch_upload, add_authorization
 
 
 @click.group()
@@ -52,17 +50,10 @@ def login(host, user_email, password):
 
 
 @main.command()
-@click.option('-h', '--host', default=None)
-@click.option('-a', '--auth-token', default=None)
-def status(host, auth_token):
+@add_authorization()
+def status(uploader):
     """Get user status."""
-    try:
-        auth = TokenAuth(jwt_token=auth_token)
-    except KeyError:
-        warn_missing_auth()
-
-    knex = Knex(token_auth=auth, host=host)
-    response = knex.get('/api/v1/auth/status')
+    response = uploader.knex.get('/api/v1/auth/status')
     click.echo(response)
 
 
@@ -72,19 +63,11 @@ def upload():
     pass
 
 @upload.command()
-@click.option('-h', '--host', default=None)
-@click.option('-a', '--auth-token', default=None)
+@add_authorization()
 @click.option('-g', '--group', default=None)
 @click.option('-v', '--verbose', default=False)
-def datasuper(host, auth_token, group, verbose):
+def datasuper(uploader, group, verbose):
     """Upload all samples from DataSuper repo."""
-    try:
-        auth = TokenAuth(jwt_token=auth_token)
-    except KeyError:
-        warn_missing_auth()
-    knex = Knex(token_auth=auth, host=host)
-    uploader = Uploader(knex=knex)
-
     sample_source = DataSuperSource()
     samples = sample_source.get_sample_payloads()
 
@@ -92,20 +75,12 @@ def datasuper(host, auth_token, group, verbose):
 
 
 @upload.command()
-@click.option('-h', '--host', default=None)
-@click.option('-a', '--auth-token', default=None)
+@add_authorization()
 @click.option('-g', '--group', default=None)
 @click.option('-v', '--verbose', default=False)
 @click.argument('result_files', nargs=-1)
-def files(host, auth_token, group, verbose, result_files):
+def files(uploader, group, verbose, result_files):
     """Upload all samples from llist of tool result files."""
-    try:
-        auth = TokenAuth(jwt_token=auth_token)
-    except KeyError:
-        warn_missing_auth()
-    knex = Knex(token_auth=auth, host=host)
-    uploader = Uploader(knex=knex)
-
     sample_source = FileSource(files=result_files)
     samples = sample_source.get_sample_payloads()
 
