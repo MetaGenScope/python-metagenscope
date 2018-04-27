@@ -26,6 +26,7 @@ def batch_upload(uploader, samples, group_uuid=None):
         current_time = datetime.now().isoformat()
         upload_group_name = f'upload_group_{current_time}'
         group_uuid = uploader.create_sample_group(upload_group_name)
+        click.echo(f'group created: <name: \'{upload_group_name}\' UUID: \'{group_uuid}\'>')
 
     try:
         results = uploader.upload_all_results(group_uuid, samples)
