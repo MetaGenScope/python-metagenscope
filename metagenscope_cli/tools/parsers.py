@@ -40,6 +40,8 @@ def parse(tool_type, schema):  # pylint: disable=too-many-return-statements,too-
         return jloads(schema['json'])
     elif tool_type == ALPHA_DIVERSITY:
         return jloads(schema['json'])
+    elif tool_type == BETA_DIVERSITY:
+        return jloads(schema['json'])
     elif tool_type == HUMANN2:
         gene_table = parse_humann2_table(schema['genes'])
         path_table = parse_humann2_pathways(schema['path_abunds'],

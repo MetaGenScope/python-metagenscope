@@ -15,10 +15,12 @@ READ_CLASS_PROPS = 'read_classification_proportions'
 READ_STATS = 'read_stats'
 MICROBE_DIRECTORY = 'microbe_directory_annotate'
 ALPHA_DIVERSITY = 'alpha_diversity_stats'
+BETA_DIVERSITY = 'beta_diversity_stats'
 HUMANN2 = 'humann2_functional_profiling'
 HUMANN2_NORMALIZED = 'humann2_normalize_genes'
 METHYLS = 'align_to_methyltransferases'
 VFDB = 'vfdb_quantify'
+
 
 
 # Other
