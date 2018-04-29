@@ -22,7 +22,9 @@ def parse(tool_type, schema):  # pylint: disable=too-many-return-statements,too-
     if not isinstance(schema, dict):
         schema = {k: v for k, v in schema}
     if tool_type in [KRAKEN, METAPHLAN2]:
-        return parse_mpa(schema['mpa'])
+        return {'taxa': parse_mpa(schema['mpa'])}
+    elif tool_type == KRAKENHLL:
+        return parse_mpa(schema['report'])
     elif tool_type == HMP_SITES:
         return jloads(schema['metaphlan2'])
     elif tool_type == MICROBE_CENSUS:
