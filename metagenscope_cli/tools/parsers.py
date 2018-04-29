@@ -53,6 +53,8 @@ def parse(tool_type, schema):  # pylint: disable=too-many-return-statements,too-
         return {'read_norm': norm_table, 'ags_norm': ags_table}
     elif tool_type in [METHYLS, VFDB]:
         return {'genes': parse_gene_table(schema['table'])}
+    elif tool_type == MACROBES:
+        return {'macrobes': jloads(schema['tbl'])}
     elif tool_type == ANCESTRY:
         return {'populations': parse_key_val_file(schema['table'])}
     else:
