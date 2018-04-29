@@ -20,6 +20,7 @@ HUMANN2 = 'humann2_functional_profiling'
 HUMANN2_NORMALIZED = 'humann2_normalize_genes'
 METHYLS = 'align_to_methyltransferases'
 VFDB = 'vfdb_quantify'
+ANCESTRY = 'human_ancestry'
 
 
 # Other
