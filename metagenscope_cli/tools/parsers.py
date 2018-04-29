@@ -27,8 +27,6 @@ def parse(tool_type, schema):  # pylint: disable=too-many-return-statements,too-
         return jloads(schema['metaphlan2'])
     elif tool_type == MICROBE_CENSUS:
         return parse_microbe_census(schema['stats'])
-    elif tool_type == SHORTBRED_AMRS:
-        return parse_shortbred_table(schema['table'])
     elif tool_type == RESISTOME_AMRS:
         return parse_resistome_tables(schema['gene'], schema['group'],
                                       schema['classus'], schema['mech'])
@@ -49,7 +47,7 @@ def parse(tool_type, schema):  # pylint: disable=too-many-return-statements,too-
         norm_table = parse_humann2_table(schema['read_depth_norm_genes'])
         ags_table = parse_humann2_table(schema['ags_norm_genes'])
         return {'read_norm': norm_table, 'ags_norm': ags_table}
-    elif tool_type in [METHYLS, VFDB]:
+    elif tool_type in [METHYLS, VFDB, AMR_GENES]:
         return {'genes': parse_gene_table(schema['table'])}
     else:
         raise UnparsableError(f'{tool_type}, {schema}')
@@ -80,10 +78,6 @@ def parse_key_val_file(filename,
     out = {scrub_keys(token[key_column]): kind(token[val_column])
            for token in tokens}
     return out
-
-
-def parse_shortbred_table(table_file):
-    return {'abundances': parse_key_val_file(table_file, skip=1)}
 
 
 def parse_resistome_tables(gene_table, group_table,
