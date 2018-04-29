@@ -27,7 +27,7 @@ class MetagenscopeConfiguration(object):
         try:
             token = self.config[USER_SECTION_KEY][TOKEN_OPTION_KEY]
         except KeyError:
-            pass
+            raise  # more pythonic to send the error up
 
         return token
 
