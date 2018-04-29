@@ -6,6 +6,7 @@ metasub cap and stored in datasuper.
 
 # Tool Types
 KRAKEN = 'kraken_taxonomy_profiling'
+KRAKENHLL = 'krakenhll_taxonomy_profiling'
 METAPHLAN2 = 'metaphlan2_taxonomy_profiling'
 HMP_SITES = 'hmp_site_dists'
 MICROBE_CENSUS = 'microbe_census'
@@ -20,6 +21,7 @@ HUMANN2_NORMALIZED = 'humann2_normalize_genes'
 METHYLS = 'align_to_methyltransferases'
 VFDB = 'vfdb_quantify'
 MACROBES = 'quantify_macrobial'
+ANCESTRY = 'human_ancestry'
 
 # Other
 TAXON_KEY = 'taxon'
