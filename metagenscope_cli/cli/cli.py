@@ -79,6 +79,18 @@ def get_sample_uuids(uploader, sample_names):
         response_uuid = response['data']['sample_uuid']
         click.echo(f'{response_name}\t{response_uuid}')
 
+@main.group()
+def run():
+    """Run actions on the server."""
+    pass
+        
+@run.command()
+@add_authorization()
+@click.argument('group_uuid')
+def middleware(uploader, group_uuid):
+    response = uploader.knex.post(f'/sample_groups/{group_uuid}/middleware', {})
+    click.echo(response
+        
 
 @main.group()
 def upload():
