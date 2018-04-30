@@ -8,6 +8,13 @@ from requests.exceptions import HTTPError
 
 from metagenscope_cli.network import Knex, Uploader
 from metagenscope_cli.network.token_auth import TokenAuth
+from metagenscope_cli.tools.parse_metadata import parse_metadata_from_csv
+
+
+def parse_metadata(filename):
+    if filename[-4:] == '.csv':
+        return parse_metadata_from_csv(filename)
+    assert False, f'{filename} extension is unsupported'
 
 
 def warn_missing_auth():
