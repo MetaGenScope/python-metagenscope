@@ -61,6 +61,16 @@ def status(uploader):
     click.echo(response)
 
 
+@main.command()
+@add_authorization()
+@click.argument('sample_names', nargs=-1)
+def get_sample_uuids(uploader, sample_names):
+    """Get UUIDs for the given sample names."""
+    for sample_name in sample_names:
+        response = uploader.knex.get(f'/api/v1/samples/getid/{sample_name}')
+        click.echo('{}\t{}'.format(response['sample_name'], response['sample_uuid']))
+
+
 @main.group()
 def upload():
     """Handle different types of uploads."""
