@@ -8,7 +8,7 @@ from metagenscope_cli.network.authenticator import Authenticator
 from metagenscope_cli.sample_sources.data_super_source import DataSuperSource
 from metagenscope_cli.sample_sources.file_source import FileSource
 
-from .utils import batch_upload, add_authorization
+from .utils import batch_upload, add_authorization, parse_metadata
 
 
 @click.group()
@@ -68,13 +68,29 @@ def get_sample_uuids(uploader, sample_names):
     """Get UUIDs for the given sample names."""
     for sample_name in sample_names:
         response = uploader.knex.get(f'/api/v1/samples/getid/{sample_name}')
-        click.echo('{}\t{}'.format(response['sample_name'], response['sample_uuid']))
+        click.echo('{}\t{}'.format(response['data']['sample_name'], response['data']['sample_uuid']))
 
 
 @main.group()
 def upload():
     """Handle different types of uploads."""
     pass
+
+
+@upload.command()
+@add_authorization()
+@click.argument('metadata_csv')
+def metadata(uploader, metadata_csv):
+    """Upload a CSV metadata file."""
+    parsed_metadata = parse_metadata(metadata_csv)
+    for sample_name, metadata in parsed_metadata.items():
+        payload = {
+            'sample_name': sample_name,
+            'metadata': metadata,
+        }
+        response = uploader.knex.post('/api/v1/samples/metadata', payload)
+        click.echo(response)
+
 
 @upload.command()
 @add_authorization()
