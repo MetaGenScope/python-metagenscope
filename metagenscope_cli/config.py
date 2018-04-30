@@ -21,15 +21,17 @@ class MetagenscopeConfiguration(object):
         if os.path.isfile(self.configuration_filename):
             self.config.read(self.configuration_filename)
 
-    def get_token(self):
+    def get_token(self, **kwargs):
         """Return stored authorization token, if it exists."""
-        token = None
         try:
             token = self.config[USER_SECTION_KEY][TOKEN_OPTION_KEY]
+            return token
         except KeyError:
-            raise  # more pythonic to send the error up
-
-        return token
+            # Return default value if provided
+            if 'default' in kwargs:
+                return kwargs['default']
+            # Throw error otherwise
+            raise
 
     def set_token(self, new_token):
         """Set and save authorization token."""
