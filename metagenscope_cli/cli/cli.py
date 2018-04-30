@@ -61,6 +61,16 @@ def status(uploader):
     click.echo(response)
 
 
+@main.command()
+@add_authorization()
+@click.argument('sample_names', nargs=-1)
+def get_sample_uuids(uploader, sample_names):
+    """Get UUIDs for the given sample names."""
+    for sample_name in sample_names:
+        response = uploader.knex.get(f'/api/v1/samples/getid/{sample_name}')
+        click.echo('{}\t{}'.format(response['sample_name'], response['sample_uuid']))
+
+
 @main.group()
 def upload():
     """Handle different types of uploads."""
@@ -69,13 +79,14 @@ def upload():
 @upload.command()
 @add_authorization()
 @click.option('-g', '--group', default=None)
+@click.option('--group-name', default=None)
 @click.option('-v', '--verbose', default=False)
-def datasuper(uploader, group, verbose):
+def datasuper(uploader, group, group_name, verbose):
     """Upload all samples from DataSuper repo."""
     sample_source = DataSuperSource()
     samples = sample_source.get_sample_payloads()
 
-    batch_upload(uploader, samples, group_uuid=group)
+    batch_upload(uploader, samples, group_uuid=group, upload_group_name=group_name)
 
 
 @upload.command()
