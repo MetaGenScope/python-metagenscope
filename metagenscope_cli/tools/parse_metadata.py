@@ -2,5 +2,5 @@ import pandas as pd
 
 
 def parse_metadata_from_csv(csv_filename):
-    df = pd.DataFrame.from_csv(csv_filename)
-    return df.to_dict()
+    df = pd.read_csv(csv_filename, index_col=0)
+    return df.to_dict(orient='index')
