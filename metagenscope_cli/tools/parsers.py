@@ -23,10 +23,12 @@ def parse(tool_type, schema):  # pylint: disable=too-many-return-statements,too-
         schema = {k: v for k, v in schema}
 
     json_tools = [ALPHA_DIVERSITY, MICROBE_DIRECTORY,
-                  READ_STATS, READ_CLASS_PROPS]
+                  READ_STATS]
     if tool_type in json_tools:
         return jloads(schema['json'])
-    if tool_type == HMP_SITES:
+    elif tool_type == READ_CLASS_PROPS:
+        return jloads(schema['json'])['totals']
+    elif tool_type == HMP_SITES:
         return jloads(schema['metaphlan2'])
     elif tool_type == MICROBE_CENSUS:
         return parse_microbe_census(schema['stats'])
@@ -68,7 +70,7 @@ def parse(tool_type, schema):  # pylint: disable=too-many-return-statements,too-
             'read_norm': parse_humann2_table(schema['read_depth_norm_genes']),
             'ags_norm': parse_humann2_table(schema['ags_norm_genes']),
         }
-    elif tool_type == RESISTOME_AMRS:
+    elif False and tool_type == RESISTOME_AMRS:
         return parse_resistome_tables(
             schema['gene'],
             schema['group'],
@@ -152,26 +154,27 @@ def parse_humann2_pathways(path_abunds, path_covs):
 
 def parse_gene_table(gene_table):
     """Return a parsed gene quantification table."""
-    with open(gene_table) as file:
-        gene_names = file.readline().strip().split(',')[1:]
-        rpks = file.readline().strip().split(',')[1:]
-        rpkms = file.readline().strip().split(',')[1:]
-        rpkmgs = file.readline().strip().split(',')[1:]
-
     data = {}
-    for i, gene_name in enumerate(gene_names):
-        row = {
-            RPK_KEY: rpks[i],
-            RPKM_KEY: rpkms[i],
-            RPKMG_KEY: rpkmgs[i],
-        }
-        data[scrub_keys(gene_name)] = row
+    with open(gene_table) as gfile:
+        gfile.readline()
+        for line in gfile:
+            tkns = line.strip().split(',')
+            gene_name = tkns[0]
+            rpk = float(tkns[1])
+            rpkm = float(tkns[2])
+            rpkmg = float(tkns[3])
+            row = {
+                RPK_KEY: float(tkns[1]),
+                RPKM_KEY: float(tkns[2]),
+                RPKMG_KEY: float(tkns[3]),
+            }
+            data[scrub_keys(gene_name)] = row
     return data
 
 
 def parse_mpa(mpa_file):
     """Ingest MPA results file."""
-    return {'taxa': parse_key_val_file(mpa_file)}
+    return parse_key_val_file(mpa_file)
 
 
 def parse_microbe_census(input_file):

@@ -44,6 +44,8 @@ class Uploader:
 
             for tool_result in tool_results:
                 result_type = tool_result['result_type']
+                if result_type == 'read_classification_proportions':  # HACK: TODO: fix in server
+                    result_type = 'reads_classified'
                 data = tool_result['data']
                 result = {
                     'type': 'success',
