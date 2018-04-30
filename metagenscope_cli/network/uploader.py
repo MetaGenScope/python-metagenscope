@@ -51,7 +51,7 @@ class Uploader:
                 }
                 try:
                     self.upload_sample_result(sample_uuid, result_type, data)
-                except Exception as exception:
+                except Exception as exception:  # pylint:disable=broad-except
                     result['type'] = 'error'
                     result['exception'] = str(exception)
                 results.append(result)

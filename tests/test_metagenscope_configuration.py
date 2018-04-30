@@ -8,13 +8,13 @@ from metagenscope_cli.config import MetagenscopeConfiguration
 def test_get_token(tmpdir):
     """Ensure empty configuration file returns a missing token."""
     test_config = MetagenscopeConfiguration('.metagenscope.ini', str(tmpdir))
-    assert test_config.get_token() == None
+    assert test_config.get_token(default=None) == None
 
 
 def test_set_token(tmpdir):
     """Ensure token is written to configuration file correctly."""
     test_config = MetagenscopeConfiguration('.metagenscope.ini', str(tmpdir))
-    assert test_config.get_token() == None
+    assert test_config.get_token(default=None) == None
     test_config.set_token('foobar')
     assert test_config.get_token() == 'foobar'
 

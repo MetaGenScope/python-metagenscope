@@ -4,7 +4,7 @@ from json import loads
 
 import click
 
-from .constants import *
+from .constants import *  # pylint:disable=wildcard-import,unused-wildcard-import
 
 
 class UnparsableError(Exception):
@@ -80,6 +80,7 @@ def parse(tool_type, schema):  # pylint: disable=too-many-return-statements,too-
 
 
 def scrub_keys(key):
+    """Replace periods (restricted by Mongo) with underscores."""
     return '_'.join(key.split('.'))
 
 
@@ -97,9 +98,10 @@ def tokenize(file_name, skip=0, sep='\t', skipchar='#'):
                 yield tkns
 
 
-def parse_key_val_file(filename,
+def parse_key_val_file(filename,                                # pylint:disable=too-many-arguments
                        skip=0, skipchar='#', sep='\t',
                        kind=float, key_column=0, val_column=1):
+    """Parse a key-value-type file."""
     tokens = tokenize(filename, skip=skip, sep=sep, skipchar=skipchar)
     out = {scrub_keys(token[key_column]): kind(token[val_column])
            for token in tokens}
@@ -108,6 +110,7 @@ def parse_key_val_file(filename,
 
 def parse_resistome_tables(gene_table, group_table,
                            classus_table, mech_table):
+    """Parse a resistome table file."""
     result = {
         'genes': parse_key_val_file(gene_table,
                                     key_column=1, val_column=2,
