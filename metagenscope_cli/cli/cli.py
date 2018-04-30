@@ -69,13 +69,14 @@ def upload():
 @upload.command()
 @add_authorization()
 @click.option('-g', '--group', default=None)
+@click.option('--group-name', default=None)
 @click.option('-v', '--verbose', default=False)
-def datasuper(uploader, group, verbose):
+def datasuper(uploader, group, group_name, verbose):
     """Upload all samples from DataSuper repo."""
     sample_source = DataSuperSource()
     samples = sample_source.get_sample_payloads()
 
-    batch_upload(uploader, samples, group_uuid=group)
+    batch_upload(uploader, samples, group_uuid=group, upload_group_name=group_name)
 
 
 @upload.command()

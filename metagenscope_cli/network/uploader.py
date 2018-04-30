@@ -25,13 +25,15 @@ class Uploader:
         sample_uuid = response['data']['sample']['uuid']
         return sample_uuid
 
-    def upload_sample_result(self, sample_uuid, result_type, data):
+    def upload_sample_result(self, sample_uuid, result_type, data, dryrun=False):
         """Upload a tool result of specified type to existing sample."""
         endpoint = f'/api/v1/samples/{sample_uuid}/{result_type}'
+        if dryrun:
+            endpoint += '?dryrun=true'
         response = self.knex.post(endpoint, data)
         return response
 
-    def upload_all_results(self, group_uuid, samples):
+    def upload_all_results(self, group_uuid, samples, dryrun=True):
         """Upload all samples and results to group."""
         # TODO: How should this handle failures at each step? Raise if create_sample,
         #       then just catch and collect tool result errors to warn user about?
@@ -50,7 +52,7 @@ class Uploader:
                     'result_type': result_type,
                 }
                 try:
-                    self.upload_sample_result(sample_uuid, result_type, data)
+                    self.upload_sample_result(sample_uuid, result_type, data, dryrun=dryrun)
                 except Exception as exception:  # pylint:disable=broad-except
                     result['type'] = 'error'
                     result['exception'] = str(exception)

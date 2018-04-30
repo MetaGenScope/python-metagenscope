@@ -18,11 +18,12 @@ def warn_missing_auth():
                'MetaGenScope configuration file (see metagenscope login help).')
 
 
-def batch_upload(uploader, samples, group_uuid=None):
+def batch_upload(uploader, samples, group_uuid=None, upload_group_name=None):
     """Batch upload a group of tool results, creating a new group for the upload."""
     if group_uuid is None:
         current_time = datetime.now().isoformat()
-        upload_group_name = f'upload_group_{current_time}'
+        if upload_group_name is None:
+            upload_group_name = f'upload_group_{current_time}'
         group_uuid = uploader.create_sample_group(upload_group_name)
         click.echo(f'group created: <name: \'{upload_group_name}\' UUID: \'{group_uuid}\'>')
 
