@@ -190,8 +190,9 @@ def parse_gene_table(gene_table):
 
 def parse_mpa(mpa_file):
     """Ingest MPA results file."""
-    return parse_key_val_file(mpa_file)
-
+    data = [taxa, val for taxa, val in parse_key_val_file(mpa_file)]
+    data = sorted(data, key=lambda x: -x[1])[:TOP_N_FILTER]
+    return {key: val for key, val in data}
 
 def parse_microbe_census(input_file):
     """Ingest microbe census results file."""
