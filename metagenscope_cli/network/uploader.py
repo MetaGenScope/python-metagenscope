@@ -1,5 +1,10 @@
 """Uploader class handles uploading samples to a server."""
 
+from datetime import datetime
+from concurrent.futures import ThreadPoolExecutor
+from sys import stderr
+
+
 class Uploader:
     """Uploader class handles uploading samples to a server."""
 
@@ -37,15 +42,17 @@ class Uploader:
         """Upload all samples and results to group."""
         # TODO: How should this handle failures at each step? Raise if create_sample,
         #       then just catch and collect tool result errors to warn user about?
+
+        executor = ThreadPoolExecutor(max_workers=20)
         results = []
         for sample_name, tool_results in samples.items():
             # TODO: source metadata? Maybe from DataSuper but not files?
+            date_now = datetime.now()
+            print(f'[uploader {date_now}] creating sample {sample_name}', file=stderr)
             sample_uuid = self.create_sample(sample_name, group_uuid)
-
+            futures = []
             for tool_result in tool_results:
                 result_type = tool_result['result_type']
-                if result_type == 'read_classification_proportions':  # HACK: TODO: fix in server
-                    result_type = 'reads_classified'
                 data = tool_result['data']
                 result = {
                     'type': 'success',
@@ -53,10 +60,17 @@ class Uploader:
                     'sample_name': sample_name,
                     'result_type': result_type,
                 }
-                try:
-                    self.upload_sample_result(sample_uuid, result_type, data, dryrun=dryrun)
-                except Exception as exception:  # pylint:disable=broad-except
-                    result['type'] = 'error'
-                    result['exception'] = str(exception)
+                date_now = datetime.now()
+                print(f'[uploader {date_now}] uploading {sample_name} :: {result_type}', file=stderr)
+                def try_upload():
+                    try:
+                        self.upload_sample_result(sample_uuid, result_type, data, dryrun=dryrun)
+                    except Exception as exception:  # pylint:disable=broad-except
+                        result['type'] = 'error'
+                        result['exception'] = str(exception)
+                    return result
+                futures.append(executor.submit(try_upload))
+            for future in futures:
+                result = future.result()
                 results.append(result)
         return results

@@ -61,6 +61,30 @@ def status(uploader):
     click.echo(response)
 
 
+@main.group()
+def get():
+    """Get data from the server."""
+    pass
+
+@get.command()
+@add_authorization()
+@click.argument('sample_names', nargs=-1)
+def sample_uuids(uploader, sample_names):
+    """Get UUIDs for the given sample names."""
+    for sample_name in sample_names:
+        response = uploader.knex.get(f'/api/v1/samples/getid/{sample_name}')
+        click.echo('{}\t{}'.format(response['data']['sample_name'], response['data']['sample_uuid']))
+
+@get.command()
+@add_authorization()
+@click.argument('sample_group_names', nargs=-1)
+def sample_group_uuids(uploader, sample_group_names):
+    """Get UUIDs for the given sample groups."""
+    for sample_group_name in sample_group_names:
+        response = uploader.knex.get(f'/api/v1/sample_groups/getid/{sample_name}')
+        click.echo('{}\t{}'.format(response['data']['sample_group_name'], response['data']['sample_group_uuid']))
+
+        
 @main.command()
 @add_authorization()
 @click.argument('sample_names', nargs=-1)
@@ -70,6 +94,7 @@ def get_sample_uuids(uploader, sample_names):
         response = uploader.knex.get(f'/api/v1/samples/getid/{sample_name}')
         click.echo('{}\t{}'.format(response['data']['sample_name'], response['data']['sample_uuid']))
 
+        
 @main.group()
 def run():
     """Run actions on the server."""
@@ -79,8 +104,8 @@ def run():
 @add_authorization()
 @click.argument('group_uuid')
 def middleware(uploader, group_uuid):
-    response = uploader.knex.post(f'/sample_groups/{group_uuid}/middleware', {})
-    click.echo(response
+    response = uploader.knex.post(f'/sample_groups/{group_uuid}/middleware', {'foo': 'bar'})
+    click.echo(response)
         
 
 @main.group()

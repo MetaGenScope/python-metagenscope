@@ -5,6 +5,7 @@ from functools import wraps
 
 import click
 from requests.exceptions import HTTPError
+from sys import stderr
 
 from metagenscope_cli.network import Knex, Uploader
 from metagenscope_cli.network.token_auth import TokenAuth
@@ -46,6 +47,7 @@ def batch_upload(uploader, samples, group_uuid=None, upload_group_name=None):
             sample_uuid = result['sample_uuid']
             sample_name = result['sample_name']
             result_type = result['result_type']
+            
             if result['type'] == 'error':
                 exception = result['exception']
                 click.secho(f'  - {sample_name} ({sample_uuid}): {result_type}',
