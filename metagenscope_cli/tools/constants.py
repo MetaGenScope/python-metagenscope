@@ -45,3 +45,4 @@ GENE_ID = 'gene_name'
 RPK_KEY = 'rpk'
 RPKM_KEY = 'rpkm'
 RPKMG_KEY = 'rpkmg'
+TOP_N_FILTER = 2 * 1000

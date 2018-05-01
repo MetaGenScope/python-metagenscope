@@ -137,7 +137,9 @@ def parse_humann2_tables(rpkm_file, rpkmg_file):
     rpkms = parse_key_val_file(rpkm_file)
     rpkmgs = parse_key_val_file(rpkmg_file)
     data = {}
-    for gene, rpkm in rpkms.items():
+    rpkms = [(gene, rpkm) for gene, rpkm in rpkms.items()]
+    rpkms = sorted(rpkms, key=lambda x: -x[1])[:TOP_N_FILTER]
+    for gene, rpkm in rpkms:
         row = {
             RPK_KEY: rpkm,  # hack since rpk does not matter
             RPKM_KEY: rpkm,
@@ -179,6 +181,9 @@ def parse_gene_table(gene_table):
                 RPKMG_KEY: float(tkns[3]),
             }
             data[scrub_keys(gene_name)] = row
+    data = [(key, val) for key, val in data.items()]
+    data = sorted(data, key=lambda x: -x[1][RPKM_KEY])[:TOP_N_FILTER]
+    data = {key: val for key, val in data}
     return data
 
 
