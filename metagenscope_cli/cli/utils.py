@@ -56,6 +56,7 @@ def batch_upload(uploader, samples, group_uuid=None, upload_group_name=None):
                 click.secho(f'    {exception}', fg='red', err=True)
             else:
                 click.secho(f'  - {sample_name} ({sample_uuid}): {result_type}', fg='green')
+    click.echo(f'group info: <name: \'{upload_group_name}\' UUID: \'{group_uuid}\'>')
 
 
 def add_authorization():
