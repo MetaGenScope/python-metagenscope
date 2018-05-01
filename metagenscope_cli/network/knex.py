@@ -23,10 +23,13 @@ class Knex(object):
     def post(self, endpoint, payload):
         """Perform authenticated POST request."""
         url = self.host + endpoint
-        response = requests.post(url,
-                                 headers=self.headers,
-                                 auth=self.auth,
-                                 json=payload)
+        if payload:
+            response = requests.post(url,
+                                     headers=self.headers,
+                                     auth=self.auth,
+                                     json=payload)
+        else:
+            response = requests.post(url, headers=self.headers, auth=self.auth)
         if response.status_code >= 400:
             print(response.content, file=stderr)
         response.raise_for_status()
