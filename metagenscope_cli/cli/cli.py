@@ -104,7 +104,7 @@ def run():
 @add_authorization()
 @click.argument('group_uuid')
 def middleware(uploader, group_uuid):
-    response = uploader.knex.post(f'/sample_groups/{group_uuid}/middleware', {'foo': 'bar'})
+    response = uploader.knex.post(f'/api/v1/sample_groups/{group_uuid}/middleware', {})
     click.echo(response)
         
 

@@ -189,7 +189,7 @@ def parse_gene_table(gene_table):
 
 def parse_mpa(mpa_file):
     """Ingest MPA results file."""
-    data = [taxa, val for taxa, val in parse_key_val_file(mpa_file)]
+    data = [(taxa, val) for taxa, val in parse_key_val_file(mpa_file).items()]
     data = sorted(data, key=lambda x: -x[1])[:TOP_N_FILTER]
     return {key: val for key, val in data}
 

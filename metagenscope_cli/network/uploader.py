@@ -43,7 +43,7 @@ class Uploader:
         # TODO: How should this handle failures at each step? Raise if create_sample,
         #       then just catch and collect tool result errors to warn user about?
 
-        executor = ThreadPoolExecutor(max_workers=20)
+        executor = ThreadPoolExecutor(max_workers=5)
         results = []
         for sample_name, tool_results in samples.items():
             # TODO: source metadata? Maybe from DataSuper but not files?
