@@ -60,7 +60,6 @@ def parse(tool_type, schema):  # pylint: disable=too-many-return-statements,too-
 
     elif tool_type == HUMANN2:
         return {
-            'genes': parse_humann2_table(schema['genes']),
             'pathways': parse_humann2_pathways(
                 schema['path_abunds'],
                 schema['path_cov']
@@ -68,8 +67,10 @@ def parse(tool_type, schema):  # pylint: disable=too-many-return-statements,too-
         }
     elif tool_type == HUMANN2_NORMALIZED:
         return {
-            'read_norm': parse_humann2_table(schema['read_depth_norm_genes']),
-            'ags_norm': parse_humann2_table(schema['ags_norm_genes']),
+            'genes': parse_humann2_tables(
+                schema['read_depth_norm_genes'],
+                schema['ags_norm_genes'],
+            ),
         }
     elif False and tool_type == RESISTOME_AMRS:
         return parse_resistome_tables(
@@ -132,9 +133,18 @@ def parse_resistome_tables(gene_table, group_table,
     return result
 
 
-def parse_humann2_table(table_file):
+def parse_humann2_tables(rpkm_file, rpkmg_file):
     """Ingest Humann2 table file."""
-    data = parse_key_val_file(table_file)
+    rpkms = parse_key_val_file(rpkm_file)
+    rpkmgs = parse_key_val_file(rpkmg_file)
+    data = {}
+    for gene, rpkm in rpkms.items():
+        row = {
+            RPK_KEY: rpkm,  # hack since rpk does not matter
+            RPKM_KEY: rpkm,
+            RPKMG_KEY: rpkmgs[gene],
+        }
+        data[gene] = row
     return data
 
 

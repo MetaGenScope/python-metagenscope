@@ -1,7 +1,7 @@
 """Knex wraps MetaGenScope requests requiring authentication."""
 
 import requests
-
+from sys import stderr
 from metagenscope_cli.constants import DEFAULT_HOST
 
 
@@ -27,6 +27,8 @@ class Knex(object):
                                  headers=self.headers,
                                  auth=self.auth,
                                  json=payload)
+        if response.status_code >= 400:
+            print(response.content, file=stderr)
         response.raise_for_status()
         return response.json()
 
