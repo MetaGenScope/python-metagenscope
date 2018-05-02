@@ -27,7 +27,7 @@ def parse(tool_type, schema):  # pylint: disable=too-many-return-statements,too-
     if tool_type in json_tools:
         return jloads(schema['json'])
     elif tool_type == READ_CLASS_PROPS:
-        return jloads(schema['json'])['totals']
+        return jloads(schema['json'])['proportions']
     elif tool_type == HMP_SITES:
         return jloads(schema['metaphlan2'])
     elif tool_type == MICROBE_CENSUS:

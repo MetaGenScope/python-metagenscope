@@ -38,6 +38,18 @@ class Uploader:
         response = self.knex.post(endpoint, data)
         return response
 
+    def get_try_upload(self, sample_uuid, sample_name, result_type, result, data, dryrun):
+        def try_upload():
+            date_now = datetime.now()
+            try:
+                print(f'[uploader {date_now}] uploading {sample_name} :: {result_type}', file=stderr)
+                self.upload_sample_result(sample_uuid, result_type, data, dryrun=dryrun)
+            except Exception as exception:  # pylint:disable=broad-except
+                result['type'] = 'error'
+                result['exception'] = str(exception)
+            return result
+        return try_upload
+
     def upload_all_results(self, group_uuid, samples, dryrun=True):
         """Upload all samples and results to group."""
         # TODO: How should this handle failures at each step? Raise if create_sample,
@@ -60,17 +72,11 @@ class Uploader:
                     'sample_name': sample_name,
                     'result_type': result_type,
                 }
-                date_now = datetime.now()
-                print(f'[uploader {date_now}] uploading {sample_name} :: {result_type}', file=stderr)
-                def try_upload():
-                    try:
-                        self.upload_sample_result(sample_uuid, result_type, data, dryrun=dryrun)
-                    except Exception as exception:  # pylint:disable=broad-except
-                        result['type'] = 'error'
-                        result['exception'] = str(exception)
-                    return result
+                try_upload = self.get_try_upload(sample_uuid, sample_name, result_type, result, data, dryrun)
                 futures.append(executor.submit(try_upload))
+    
             for future in futures:
                 result = future.result()
                 results.append(result)
+
         return results

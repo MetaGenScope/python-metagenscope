@@ -36,7 +36,9 @@ class SampleSource:
                 except UnparsableError:
                     print(f'[parse-error] could not parse {result_type}', file=stderr)
                     continue
-
+                except KeyError:
+                    print(f'[key-error] {sample_name} :: {result_type}', file=stderr)
+                
                 result_payload = {
                     'result_type': result_type,
                     'data': data,
