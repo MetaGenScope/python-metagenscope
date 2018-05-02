@@ -2,6 +2,15 @@
 
 from metagenscope_cli.sample_sources import SampleSource
 
+no_parse = [
+        'filter_human_dna',
+        'mash_sketch',
+        'resistome_amrs',
+        'shortbred_amr_profiling',
+        'adapter_removal',
+        'align_to_sa_n315',
+        'bracken_abundance_estimation',
+    ]
 
 def parse_file_path(file_path):
     """Extract file metadata from its path."""
@@ -27,6 +36,8 @@ class FileSource(SampleSource):
         catalog = {}
         for file in self.files:
             sample_name, result_type, file_type = parse_file_path(file)
+            if result_type in no_parse:
+                continue
 
             try:
                 try:

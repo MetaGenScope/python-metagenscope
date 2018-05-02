@@ -2,6 +2,7 @@
 
 import click
 from requests.exceptions import HTTPError
+from sys import stderr
 
 from metagenscope_cli.config import config
 from metagenscope_cli.network.authenticator import Authenticator
@@ -115,7 +116,18 @@ def run():
 def middleware(uploader, group_uuid):
     response = uploader.knex.post(f'/api/v1/sample_groups/{group_uuid}/middleware', {})
     click.echo(response)
-        
+
+
+@run.command()
+@add_authorization()
+@click.argument('sample_name')
+def sample_middleware(uploader, sample_name):
+    response = uploader.knex.get(f'/api/v1/samples/getid/{sample_name}')
+    sample_uuid = response['data']['sample_uuid']
+    print(f'{sample_name} :: {sample_uuid}', file=stderr)
+    response = uploader.knex.post(f'/api/v1/samples/{sample_uuid}/middleware', {})
+    click.echo(response)
+    
 
 @main.group()
 def upload():
@@ -134,8 +146,11 @@ def metadata(uploader, metadata_csv):
             'sample_name': sample_name,
             'metadata': sample_metadata,
         }
-        response = uploader.knex.post('/api/v1/samples/metadata', payload)
-        click.echo(response)
+        try:
+            response = uploader.knex.post('/api/v1/samples/metadata', payload)
+            click.echo(response)
+        except Exception:
+            print(f'[upload-metadata-error] {sample_name}', file=stderr)
 
 
 @upload.command()
