@@ -45,7 +45,7 @@ def parse(tool_type, schema):  # pylint: disable=too-many-return-statements,too-
         return jloads(schema[key])
     elif tool_type in SIMPLE_PARSE:
         func = SIMPLE_PARSE[tool_type][0]
-        fnames = [schema[key] for key in SIMPLE_PARSE[1:]]
+        fnames = [schema[key] for key in SIMPLE_PARSE[tool_type][1:]]
         return func(*fnames)
     raise UnparsableError(f'{tool_type}, {schema}')
 
