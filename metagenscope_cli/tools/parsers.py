@@ -9,7 +9,6 @@ class UnparsableError(Exception):
     pass
 
 
-
 JSON_TOOLS = {
     ALPHA_DIVERSITY: 'json',
     MICROBE_DIRECTORY: 'json',
@@ -34,6 +33,7 @@ SIMPLE_PARSE = {
     HUMANN2_NORMALIZED: (parse_humann2_tables, 'read_depth_norm_genes', 'ags_norm_genes'),
 }
 
+
 def parse(tool_type, schema):  # pylint: disable=too-many-return-statements,too-many-branches
     """Parse schema as tool_type."""
     if not isinstance(schema, dict):
@@ -47,6 +47,3 @@ def parse(tool_type, schema):  # pylint: disable=too-many-return-statements,too-
         fnames = [schema[key] for key in SIMPLE_PARSE[1:]]
         return func(*fnames)
     raise UnparsableError(f'{tool_type}, {schema}')
-
-
-

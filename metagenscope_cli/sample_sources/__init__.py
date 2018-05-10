@@ -3,6 +3,7 @@
 from metagenscope_cli.tools.parsers import parse, UnparsableError
 from sys import stderr
 
+
 class SampleSource:
     """Base SampleSource interface."""
 
