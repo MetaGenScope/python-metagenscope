@@ -36,14 +36,11 @@ SIMPLE_PARSE = {
 
 def parse(tool_type, schema):  # pylint: disable=too-many-return-statements,too-many-branches
     """Parse schema as tool_type."""
-    if not isinstance(schema, dict):
-        schema = {k: v for k, v in schema}
-
     if tool_type in JSON_TOOLS:
         key = JSON_TOOLS[tool_type]
         return jloads(schema[key])
     elif tool_type in SIMPLE_PARSE:
         func = SIMPLE_PARSE[tool_type][0]
-        fnames = [schema[key] for key in SIMPLE_PARSE[1:]]
+        fnames = [schema[key] for key in SIMPLE_PARSE[tool_type][1:]]
         return func(*fnames)
     raise UnparsableError(f'{tool_type}, {schema}')
