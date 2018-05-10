@@ -22,6 +22,9 @@ class DataSuperSource(SampleSource):
             catalog[sample.name] = {}
             for result in sample.results():
                 result_type = result.resultType()
-                catalog[sample.name][result_type] = result.files()
+                catalog[sample.name][result_type] = {
+                    file_type: filename
+                    for file_type, filename in result.files()
+                }
 
         return catalog

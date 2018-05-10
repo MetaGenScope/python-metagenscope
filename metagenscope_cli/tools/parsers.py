@@ -37,9 +37,6 @@ SIMPLE_PARSE = {
 
 def parse(tool_type, schema):  # pylint: disable=too-many-return-statements,too-many-branches
     """Parse schema as tool_type."""
-    if not isinstance(schema, dict):
-        schema = {k: v for k, v in schema}
-
     if tool_type in JSON_TOOLS:
         key = JSON_TOOLS[tool_type]
         return jloads(schema[key])
