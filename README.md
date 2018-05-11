@@ -47,5 +47,5 @@ See also the list of [contributors][contributors] who participated in this proje
 This project is licensed under the MIT License - see the `LICENSE.md` file for details.
 
 
-[project-tags]: https://github.com/bchrobot/python-metagenscope/tags
-[contributors]: https://github.com/bchrobot/python-metagenscope/contributors
+[project-tags]: https://github.com/metagenscope/python-metagenscope/tags
+[contributors]: https://github.com/metagenscope/python-metagenscope/contributors
