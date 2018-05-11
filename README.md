@@ -1,5 +1,7 @@
 # MetaGenScope CLI
 
+[![CircleCI](https://circleci.com/gh/MetaGenScope/python-metagenscope/tree/master.svg?style=svg)](https://circleci.com/gh/MetaGenScope/python-metagenscope/tree/master)
+
 MetaGenScope-CLI is used to upload data sets to the MetaGenScope web platform.
 
 ## Getting Started
