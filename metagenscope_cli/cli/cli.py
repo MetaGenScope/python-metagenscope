@@ -17,6 +17,18 @@ def main():
     pass
 
 
+def handle_auth_request(request_generator):
+    """Perform common authentication request functions."""
+    try:
+        jwt_token = request_generator()
+        click.echo(f'JWT Token: {jwt_token}')
+
+        if click.confirm('Store token for future use (overwrites existing)?'):
+            config.set_token(jwt_token)
+    except HTTPError as http_error:
+        click.echo(f'There was an error with registration: {http_error}', err=True)
+
+
 @main.command()
 @click.option('-h', '--host', default=None)
 @click.argument('username')
@@ -25,13 +37,12 @@ def main():
 def register(host, username, user_email, password):
     """Register as a new MetaGenScope user."""
     authenticator = Authenticator(host=host)
-    try:
-        jwt_token = authenticator.register(username, user_email, password)
-        click.echo(f'JWT Token: {jwt_token}')
-    except HTTPError as http_error:
-        click.echo(f'There was an error with registration: {http_error}', err=True)
 
-    # TODO: ask to persist JWT here
+    def request_generator():
+        """Generate registration auth request."""
+        return authenticator.register(username, user_email, password)
+
+    handle_auth_request(request_generator)
 
 
 @main.command()
@@ -41,16 +52,12 @@ def register(host, username, user_email, password):
 def login(host, user_email, password):
     """Authenticate as an existing MetaGenScope user."""
     authenticator = Authenticator(host=host)
-    try:
-        jwt_token = authenticator.login(user_email, password)
-        click.echo(f'JWT Token: {jwt_token}')
 
-        if click.confirm('Store token for future use (overwrites existing)?'):
-            config.set_token(jwt_token)
-    except HTTPError as http_error:
-        click.echo(f'There was an error logging in: {http_error}', err=True)
+    def request_generator():
+        """Generate registration auth request."""
+        return authenticator.login(user_email, password)
 
-    # TODO: ask to persist JWT here
+    handle_auth_request(request_generator)
 
 
 @main.command()
@@ -68,7 +75,9 @@ def get_sample_uuids(uploader, sample_names):
     """Get UUIDs for the given sample names."""
     for sample_name in sample_names:
         response = uploader.knex.get(f'/api/v1/samples/getid/{sample_name}')
-        click.echo('{}\t{}'.format(response['data']['sample_name'], response['data']['sample_uuid']))
+        response_name = response['data']['sample_name']
+        response_uuid = response['data']['sample_uuid']
+        click.echo(f'{response_name}\t{response_uuid}')
 
 
 @main.group()
@@ -83,10 +92,10 @@ def upload():
 def metadata(uploader, metadata_csv):
     """Upload a CSV metadata file."""
     parsed_metadata = parse_metadata(metadata_csv)
-    for sample_name, metadata in parsed_metadata.items():
+    for sample_name, sample_metadata in parsed_metadata.items():
         payload = {
             'sample_name': sample_name,
-            'metadata': metadata,
+            'metadata': sample_metadata,
         }
         response = uploader.knex.post('/api/v1/samples/metadata', payload)
         click.echo(response)
@@ -96,8 +105,7 @@ def metadata(uploader, metadata_csv):
 @add_authorization()
 @click.option('-g', '--group', default=None)
 @click.option('--group-name', default=None)
-@click.option('-v', '--verbose', default=False)
-def datasuper(uploader, group, group_name, verbose):
+def datasuper(uploader, group, group_name):
     """Upload all samples from DataSuper repo."""
     sample_source = DataSuperSource()
     samples = sample_source.get_sample_payloads()
@@ -108,9 +116,8 @@ def datasuper(uploader, group, group_name, verbose):
 @upload.command()
 @add_authorization()
 @click.option('-g', '--group', default=None)
-@click.option('-v', '--verbose', default=False)
 @click.argument('result_files', nargs=-1)
-def files(uploader, group, verbose, result_files):
+def files(uploader, group, result_files):
     """Upload all samples from llist of tool result files."""
     sample_source = FileSource(files=result_files)
     samples = sample_source.get_sample_payloads()

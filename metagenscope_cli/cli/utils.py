@@ -12,9 +12,10 @@ from metagenscope_cli.tools.parse_metadata import parse_metadata_from_csv
 
 
 def parse_metadata(filename):
+    """Parse sample metadata."""
     if filename[-4:] == '.csv':
         return parse_metadata_from_csv(filename)
-    assert False, f'{filename} extension is unsupported'
+    raise ValueError(f'{filename} extension is unsupported')
 
 
 def warn_missing_auth():
