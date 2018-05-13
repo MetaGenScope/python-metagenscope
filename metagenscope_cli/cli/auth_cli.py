@@ -1,12 +1,14 @@
 """CLI to login, register and authenticate."""
 
 import click
+import os
 from requests.exceptions import HTTPError
 
 from metagenscope_cli.network.authenticator import Authenticator
 from metagenscope_cli.config import config
 
 from .cli import main
+from .utils import add_authorization
 
 
 def handle_auth_request(request_generator):
@@ -28,6 +30,8 @@ def handle_auth_request(request_generator):
 @click.argument('password')
 def register(host, username, user_email, password):
     """Register as a new MetaGenScope user."""
+    if host is None:
+        host = os.environ['MGS_HOST']
     authenticator = Authenticator(host=host)
 
     def request_generator():
@@ -43,6 +47,8 @@ def register(host, username, user_email, password):
 @click.argument('password')
 def login(host, user_email, password):
     """Authenticate as an existing MetaGenScope user."""
+    if host is None:
+        host = os.environ['MGS_HOST']
     authenticator = Authenticator(host=host)
 
     def request_generator():

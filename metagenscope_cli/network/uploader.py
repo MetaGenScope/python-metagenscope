@@ -2,6 +2,8 @@
 
 from datetime import datetime
 from concurrent.futures import ThreadPoolExecutor
+
+from requests.exceptions import HTTPError
 from sys import stderr
 
 
@@ -26,8 +28,12 @@ class Uploader:
             "sample_group_uuid": group_uuid,
             "metadata": metadata,
         }
-        response = self.knex.post('/api/v1/samples', payload)
-        sample_uuid = response['data']['sample']['uuid']
+        try:
+            response = self.knex.post('/api/v1/samples', payload)
+            sample_uuid = response['data']['sample']['uuid']
+        except HTTPError:
+            response = self.knex.get(f'/api/v1/samples/getid/{sample_name}')
+            sample_uuid = response['data']['sample_uuid']
         return sample_uuid
 
     def upload_sample_result(self, sample_uuid, result_type, data, dryrun=False):

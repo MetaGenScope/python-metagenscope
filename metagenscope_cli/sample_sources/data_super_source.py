@@ -4,6 +4,7 @@ import datasuper as ds
 
 from metagenscope_cli.sample_sources import SampleSource
 
+from .constants import *
 
 class DataSuperSource(SampleSource):
     """Samples from a DataSuper repository."""
@@ -22,9 +23,12 @@ class DataSuperSource(SampleSource):
             catalog[sample.name] = {}
             for result in sample.results():
                 result_type = result.resultType()
+                if result_type in NO_PARSE:
+                    continue
+
                 catalog[sample.name][result_type] = {
-                    file_type: filename
-                    for file_type, filename in result.files()
+                    file_type: file_record.filepath()
+                    for file_type, file_record in result.files()
                 }
 
         return catalog

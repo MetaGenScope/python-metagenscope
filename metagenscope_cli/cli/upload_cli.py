@@ -1,5 +1,6 @@
 """CLI to upload data to a MetaGenScope Server."""
 
+import click
 from sys import stderr
 
 from metagenscope_cli.sample_sources.data_super_source import DataSuperSource
@@ -18,12 +19,13 @@ def upload():
 @upload.command()
 @add_authorization()
 @click.argument('metadata_csv')
-def metadata(uploader, metadata_csv):
+@click.argument('sample_names', nargs=-1)
+def metadata(uploader, metadata_csv, sample_names):
     """Upload a CSV metadata file."""
-    parsed_metadata = parse_metadata(metadata_csv)
+    parsed_metadata = parse_metadata(metadata_csv, sample_names)
     for sample_name, metadata in parsed_metadata.items():
         payload = {
-            'sample_name': '0' + str(sample_name),  # hack
+            'sample_name': str(sample_name),
             'metadata': metadata,
         }
         try:

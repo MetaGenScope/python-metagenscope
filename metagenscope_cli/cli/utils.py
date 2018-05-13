@@ -1,22 +1,24 @@
 """Utilities for MetaGenScope CLI."""
 
+import os
+
 from datetime import datetime
 from functools import wraps
 
 import click
 from requests.exceptions import HTTPError
-from sys import stderr
+from sys import stderr, exit
 
 from metagenscope_cli.network import Knex, Uploader
 from metagenscope_cli.network.token_auth import TokenAuth
 from metagenscope_cli.tools.parse_metadata import parse_metadata_from_csv
 
 
-def parse_metadata(filename):
+def parse_metadata(filename, sample_names):
     """Parse sample metadata."""
     if filename[-4:] == '.csv':
-        return parse_metadata_from_csv(filename)
-    raise ValueError(f'{filename} extension is unsupported')
+        return parse_metadata_from_csv(filename, sample_names)
+    assert False, f'{filename} extension is unsupported'
 
 
 def warn_missing_auth():
@@ -72,6 +74,13 @@ def add_authorization():
                 auth = TokenAuth(jwt_token=auth_token)
             except KeyError:
                 warn_missing_auth()
+
+            if host is None:
+                try:
+                    host = os.environ['MGS_HOST']
+                except KeyError:
+                    print('No host. Exiting', file=stderr)
+                    exit(1)
 
             knex = Knex(token_auth=auth, host=host)
             uploader = Uploader(knex=knex)
