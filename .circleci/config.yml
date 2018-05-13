@@ -13,10 +13,6 @@ jobs:
       - checkout
 
       - run:
-          name: Run tests with py27
-          command: tox -e py27
-
-      - run:
           name: Run tests with py35
           command: tox -e py35
 
@@ -25,13 +21,9 @@ jobs:
           command: tox -e py36
 
       - run:
-          name: Run tests with pypy
-          command: tox -e pypy
-
-      - run:
           name: Run tests with pypy3
           command: tox -e pypy3
 
       - run:
-          name: Run tests with pylint
+          name: Run pylint
           command: tox -e pylint
