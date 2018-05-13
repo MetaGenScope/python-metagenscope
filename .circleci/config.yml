@@ -23,9 +23,9 @@ jobs:
           name: Run tests with py27
           command: tox -e py27
 
-      - run:
-          name: Run tests with py34
-          command: tox -e py34
+      # - run:
+      #     name: Run tests with py34
+      #     command: tox -e py34
 
       - run:
           name: Run tests with py35
