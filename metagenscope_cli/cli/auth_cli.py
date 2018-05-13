@@ -1,7 +1,7 @@
 """CLI to login, register and authenticate."""
 
-import click
 import os
+import click
 from requests.exceptions import HTTPError
 
 from metagenscope_cli.network.authenticator import Authenticator

@@ -1,3 +1,4 @@
+"""Constants for sample source."""
 
 
 NO_PARSE = [

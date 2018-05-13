@@ -2,9 +2,10 @@
 
 from datetime import datetime
 from concurrent.futures import ThreadPoolExecutor
+from sys import stderr
 
 from requests.exceptions import HTTPError
-from sys import stderr
+
 
 
 class Uploader:
@@ -44,11 +45,15 @@ class Uploader:
         response = self.knex.post(endpoint, data)
         return response
 
-    def get_try_upload(self, sample_uuid, sample_name, result_type, result, data, dryrun):
+    def get_try_upload(self, sample_uuid, sample_name, result_type, result, data, dryrun):  # pylint: disable=too-many-arguments
+        """Return a function that will attempt an upload when called."""
+
         def try_upload():
+            """Attempt an upload, return the result."""
             date_now = datetime.now()
             try:
-                print(f'[uploader {date_now}] uploading {sample_name} :: {result_type}', file=stderr)
+                print(f'[uploader {date_now}] uploading {sample_name} :: {result_type}',
+                      file=stderr)
                 self.upload_sample_result(sample_uuid, result_type, data, dryrun=dryrun)
             except Exception as exception:  # pylint:disable=broad-except
                 result['type'] = 'error'
@@ -58,29 +63,29 @@ class Uploader:
 
     def upload_all_results(self, group_uuid, samples, dryrun=True):
         """Upload all samples and results to group."""
-        # TODO: How should this handle failures at each step? Raise if create_sample,
-        #       then just catch and collect tool result errors to warn user about?
-
         executor = ThreadPoolExecutor(max_workers=5)
         results = []
         for sample_name, tool_results in samples.items():
-            # TODO: source metadata? Maybe from DataSuper but not files?
-            date_now = datetime.now()
-            print(f'[uploader {date_now}] creating sample {sample_name}', file=stderr)
+            print(f'[uploader {datetime.now()}] creating sample {sample_name}', file=stderr)
             sample_uuid = self.create_sample(sample_name, group_uuid)
             futures = []
             for tool_result in tool_results:
-                result_type = tool_result['result_type']
-                data = tool_result['data']
                 result = {
                     'type': 'success',
                     'sample_uuid': sample_uuid,
                     'sample_name': sample_name,
-                    'result_type': result_type,
+                    'result_type': tool_result['result_type'],
                 }
-                try_upload = self.get_try_upload(sample_uuid, sample_name, result_type, result, data, dryrun)
+                try_upload = self.get_try_upload(
+                    sample_uuid,
+                    sample_name,
+                    tool_result['result_type'],
+                    result,
+                    tool_result['data'],
+                    dryrun
+                )
                 futures.append(executor.submit(try_upload))
-    
+
             for future in futures:
                 result = future.result()
                 results.append(result)

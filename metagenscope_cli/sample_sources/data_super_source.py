@@ -4,7 +4,8 @@ import datasuper as ds
 
 from metagenscope_cli.sample_sources import SampleSource
 
-from .constants import *
+from .constants import *  # pylint:disable=wildcard-import,unused-wildcard-import
+
 
 class DataSuperSource(SampleSource):
     """Samples from a DataSuper repository."""

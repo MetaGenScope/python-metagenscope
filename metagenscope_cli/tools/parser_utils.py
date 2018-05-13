@@ -2,8 +2,7 @@
 
 from json import loads
 
-from .constants import *
-
+from .constants import *  # pylint:disable=wildcard-import,unused-wildcard-import
 
 
 def jloads(fname):
@@ -101,9 +100,6 @@ def parse_gene_table(gene_table):
         for line in gfile:
             tkns = line.strip().split(',')
             gene_name = tkns[0]
-            rpk = float(tkns[1])
-            rpkm = float(tkns[2])
-            rpkmg = float(tkns[3])
             row = {
                 RPK_KEY: float(tkns[1]),
                 RPKM_KEY: float(tkns[2]),
@@ -122,6 +118,7 @@ def parse_mpa(mpa_file):
     data = sorted(data, key=lambda x: -x[1])[:TOP_N_FILTER]
     return {key: val for key, val in data}
 
+
 def parse_microbe_census(input_file):
     """Ingest microbe census results file."""
     data = {}
@@ -137,6 +134,6 @@ def parse_microbe_census(input_file):
     # Require valid values
     for key in [AGS_KEY, TOTAL_BASES_KEY, GENOME_EQUIVALENTS_KEY]:
         if key not in data:
-            raise click.ClickException('Missing {0}!'.format(key))
+            assert False, 'Missing key in MicrobeCensus'
 
     return data

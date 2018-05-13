@@ -1,7 +1,7 @@
 """Sources for sample data."""
 
-from metagenscope_cli.tools.parsers import parse, UnparsableError
 from sys import stderr
+from metagenscope_cli.tools.parsers import parse, UnparsableError
 
 
 class SampleSource(object):
@@ -39,7 +39,7 @@ class SampleSource(object):
                     continue
                 except KeyError:
                     print(f'[key-error] {sample_name} :: {result_type}', file=stderr)
-                
+
                 result_payload = {
                     'result_type': result_type,
                     'data': data,

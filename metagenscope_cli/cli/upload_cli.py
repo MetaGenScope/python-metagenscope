@@ -1,7 +1,7 @@
 """CLI to upload data to a MetaGenScope Server."""
 
-import click
 from sys import stderr
+import click
 
 from metagenscope_cli.sample_sources.data_super_source import DataSuperSource
 from metagenscope_cli.sample_sources.file_source import FileSource
@@ -23,15 +23,15 @@ def upload():
 def metadata(uploader, metadata_csv, sample_names):
     """Upload a CSV metadata file."""
     parsed_metadata = parse_metadata(metadata_csv, sample_names)
-    for sample_name, metadata in parsed_metadata.items():
+    for sample_name, metadata_dict in parsed_metadata.items():
         payload = {
             'sample_name': str(sample_name),
-            'metadata': metadata,
+            'metadata': metadata_dict,
         }
         try:
             response = uploader.knex.post('/api/v1/samples/metadata', payload)
             click.echo(response)
-        except Exception:
+        except Exception:  # pylint disable:broad-except
             print(f'[upload-metadata-error] {sample_name}', file=stderr)
 
 
@@ -39,8 +39,7 @@ def metadata(uploader, metadata_csv, sample_names):
 @add_authorization()
 @click.option('-g', '--group', default=None)
 @click.option('--group-name', default=None)
-@click.option('-v', '--verbose', default=False)
-def datasuper(uploader, group, group_name, verbose):
+def datasuper(uploader, group, group_name):
     """Upload all samples from DataSuper repo."""
     sample_source = DataSuperSource()
     samples = sample_source.get_sample_payloads()
@@ -51,9 +50,8 @@ def datasuper(uploader, group, group_name, verbose):
 @upload.command()
 @add_authorization()
 @click.option('-g', '--group', default=None)
-@click.option('-v', '--verbose', default=False)
 @click.argument('result_files', nargs=-1)
-def files(uploader, group, verbose, result_files):
+def files(uploader, group, result_files):
     """Upload all samples from llist of tool result files."""
     sample_source = FileSource(files=result_files)
     samples = sample_source.get_sample_payloads()

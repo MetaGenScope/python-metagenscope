@@ -1,13 +1,12 @@
 """Utilities for MetaGenScope CLI."""
 
 import os
-
+from sys import stderr
 from datetime import datetime
 from functools import wraps
 
 import click
 from requests.exceptions import HTTPError
-from sys import stderr, exit
 
 from metagenscope_cli.network import Knex, Uploader
 from metagenscope_cli.network.token_auth import TokenAuth
@@ -18,7 +17,7 @@ def parse_metadata(filename, sample_names):
     """Parse sample metadata."""
     if filename[-4:] == '.csv':
         return parse_metadata_from_csv(filename, sample_names)
-    assert False, f'{filename} extension is unsupported'
+    assert False, f'{filename} extension is unsupported'  # pylint disable:inconsistent-return-statements
 
 
 def warn_missing_auth():
@@ -50,7 +49,7 @@ def batch_upload(uploader, samples, group_uuid=None, upload_group_name=None):
             sample_uuid = result['sample_uuid']
             sample_name = result['sample_name']
             result_type = result['result_type']
-            
+
             if result['type'] == 'error':
                 exception = result['exception']
                 click.secho(f'  - {sample_name} ({sample_uuid}): {result_type}',

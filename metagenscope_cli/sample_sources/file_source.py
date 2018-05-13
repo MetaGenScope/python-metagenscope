@@ -2,7 +2,8 @@
 
 from metagenscope_cli.sample_sources import SampleSource
 
-from .constants import *
+from .constants import *  # pylint:disable=wildcard-import,unused-wildcard-import
+
 
 def parse_file_path(file_path):
     """Extract file metadata from its path."""

@@ -1,7 +1,7 @@
 """Knex wraps MetaGenScope requests requiring authentication."""
 
-import requests
 from sys import stderr
+import requests
 from metagenscope_cli.constants import DEFAULT_HOST
 
 

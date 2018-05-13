@@ -1,3 +1,5 @@
+# pylint:disable=wildcard-import,unused-wildcard-import
+
 """MetaGenScope CLI."""
 
 from .cli import *
