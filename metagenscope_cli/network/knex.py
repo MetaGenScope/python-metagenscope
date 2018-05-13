@@ -5,7 +5,7 @@ import requests
 from metagenscope_cli.constants import DEFAULT_HOST
 
 
-class Knex:
+class Knex(object):
     """Knex wraps MetaGenScope requests requiring authentication."""
 
     def __init__(self, token_auth, host=None, headers=None):
