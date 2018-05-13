@@ -6,15 +6,11 @@ jobs:
       - image: themattrix/tox
 
     steps:
+      - run:
+          name: Install Git
+          command: apt-get update; apt-get install -y git
+
       - checkout
-
-      - run:
-          name: Run tests with py27
-          command: tox -e py27
-
-      - run:
-          name: Run tests with py34
-          command: tox -e py34
 
       - run:
           name: Run tests with py35
@@ -25,13 +21,10 @@ jobs:
           command: tox -e py36
 
       - run:
-          name: Run tests with pypy
-          command: tox -e pypy
-
-      - run:
           name: Run tests with pypy3
           command: tox -e pypy3
 
       - run:
-          name: Run tests with pylint
+          name: Run pylint
           command: tox -e pylint
+          when: always
