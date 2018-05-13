@@ -7,7 +7,6 @@ from sys import stderr
 from requests.exceptions import HTTPError
 
 
-
 class Uploader:
     """Uploader class handles uploading samples to a server."""
 

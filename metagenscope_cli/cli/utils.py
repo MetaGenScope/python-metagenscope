@@ -17,7 +17,8 @@ def parse_metadata(filename, sample_names):
     """Parse sample metadata."""
     if filename[-4:] == '.csv':
         return parse_metadata_from_csv(filename, sample_names)
-    assert False, f'{filename} extension is unsupported'  # pylint disable:inconsistent-return-statements
+    assert False, f'{filename} extension is unsupported'
+    return None  # make pylint happy
 
 
 def warn_missing_auth():

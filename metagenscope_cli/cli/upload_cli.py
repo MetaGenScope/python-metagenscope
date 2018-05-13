@@ -31,7 +31,7 @@ def metadata(uploader, metadata_csv, sample_names):
         try:
             response = uploader.knex.post('/api/v1/samples/metadata', payload)
             click.echo(response)
-        except Exception:  # pylint disable:broad-except
+        except Exception:  # pylint:disable=broad-except
             print(f'[upload-metadata-error] {sample_name}', file=stderr)
 
 
