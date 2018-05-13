@@ -3,4 +3,5 @@
 
 class ServerAuthenticationError(Exception):
     """Exception raised by bad authentication."""
+
     pass
