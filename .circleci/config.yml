@@ -6,6 +6,17 @@ jobs:
       - image: themattrix/tox
 
     steps:
+
+      - run:
+          name: Install DataSuper
+          working_directory: /tmp
+          command: |
+            apt-get update; apt-get install -y git
+            git clone https://github.com/dcdanko/DataSuper.git datasuper
+            cd datasuper
+            git checkout develop
+            pip install -e .
+
       - checkout
 
       - run:
