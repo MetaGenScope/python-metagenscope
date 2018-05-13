@@ -44,7 +44,8 @@ class Uploader:
         response = self.knex.post(endpoint, data)
         return response
 
-    def get_try_upload(self, sample_uuid, sample_name, result_type, result, data, dryrun):  # pylint: disable=too-many-arguments
+    def get_try_upload(self, sample_uuid, sample_name,
+                       result_type, result, data, dryrun):  # pylint: disable=too-many-arguments
         """Return a function that will attempt an upload when called."""
 
         def try_upload():
