@@ -3,7 +3,17 @@ MetaGenScope-CLI is used to upload data sets to the MetaGenScope web platform.
 """
 from setuptools import find_packages, setup
 
-dependencies = ['click', 'requests', 'configparser']
+dependencies = [
+    'click',
+    'requests',
+    'configparser',
+    'pandas',
+    'datasuper==0.9.0',
+]
+
+dependency_links = [
+    'git+https://github.com/dcdanko/DataSuper.git@develop#egg=datasuper-0.9.0',
+]
 
 setup(
     name='metagenscope',
@@ -19,6 +29,7 @@ setup(
     zip_safe=False,
     platforms='any',
     install_requires=dependencies,
+    dependency_links=dependency_links,
     entry_points={
         'console_scripts': [
             'metagenscope = metagenscope_cli.cli:main',
@@ -35,7 +46,6 @@ setup(
         'Operating System :: Unix',
         'Operating System :: Microsoft :: Windows',
         'Programming Language :: Python',
-        'Programming Language :: Python :: 2',
         'Programming Language :: Python :: 3',
         'Topic :: Software Development :: Libraries :: Python Modules',
     ]

@@ -1,5 +1,6 @@
 """Uploader class handles uploading samples to a server."""
 
+
 class Uploader:
     """Uploader class handles uploading samples to a server."""
 
@@ -35,11 +36,8 @@ class Uploader:
 
     def upload_all_results(self, group_uuid, samples, dryrun=True):
         """Upload all samples and results to group."""
-        # TODO: How should this handle failures at each step? Raise if create_sample,
-        #       then just catch and collect tool result errors to warn user about?
         results = []
         for sample_name, tool_results in samples.items():
-            # TODO: source metadata? Maybe from DataSuper but not files?
             sample_uuid = self.create_sample(sample_name, group_uuid)
 
             for tool_result in tool_results:

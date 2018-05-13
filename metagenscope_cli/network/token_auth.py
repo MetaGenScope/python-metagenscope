@@ -25,4 +25,5 @@ class TokenAuth(AuthBase):  # pylint: disable=too-few-public-methods
         return request
 
     def __str__(self):
+        """Return string representation of TokenAuth."""
         return self.jwt_token

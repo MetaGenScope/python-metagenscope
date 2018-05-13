@@ -9,6 +9,7 @@ from .constants import *  # pylint:disable=wildcard-import,unused-wildcard-impor
 
 class UnparsableError(Exception):
     """Custom exception signaling an unknown Tool Result type."""
+
     pass
 
 

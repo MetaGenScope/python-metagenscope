@@ -3,7 +3,7 @@
 from metagenscope_cli.tools.parsers import parse, UnparsableError
 from sys import stderr
 
-class SampleSource:
+class SampleSource(object):
     """Base SampleSource interface."""
 
     def get_cataloged_files(self):
