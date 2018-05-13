@@ -9,6 +9,7 @@ class DataSuperSource(SampleSource):
     """Samples from a DataSuper repository."""
 
     def __init__(self, all_samples=True):
+        """Initialize a DataSuperSource instance."""
         self.all_samples = all_samples
 
     def get_cataloged_files(self):
