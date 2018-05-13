@@ -8,7 +8,7 @@ dependencies = [
     'requests',
     'configparser',
     'pandas',
-    'datasuper-0.9.0',
+    'datasuper==0.9.0',
 ]
 
 dependency_links = [
