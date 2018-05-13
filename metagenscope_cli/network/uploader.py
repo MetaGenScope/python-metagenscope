@@ -1,5 +1,6 @@
 """Uploader class handles uploading samples to a server."""
 
+
 class Uploader:
     """Uploader class handles uploading samples to a server."""
 

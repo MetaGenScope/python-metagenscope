@@ -20,7 +20,6 @@ class Knex(object):
         if self.headers is None:
             self.headers = {'Accept': 'application/json'}
 
-
     def post(self, endpoint, payload):
         """Perform authenticated POST request."""
         url = self.host + endpoint
