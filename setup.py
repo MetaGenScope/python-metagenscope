@@ -8,7 +8,11 @@ dependencies = [
     'requests',
     'configparser',
     'pandas',
-    'git+https://github.com/dcdanko/DataSuper.git@develop',
+    'datasuper-0.9.0',
+]
+
+dependency_links = [
+    'git+https://github.com/dcdanko/DataSuper.git@develop#egg=datasuper-0.9.0',
 ]
 
 setup(
@@ -25,6 +29,7 @@ setup(
     zip_safe=False,
     platforms='any',
     install_requires=dependencies,
+    dependency_links=dependency_links,
     entry_points={
         'console_scripts': [
             'metagenscope = metagenscope_cli.cli:main',
