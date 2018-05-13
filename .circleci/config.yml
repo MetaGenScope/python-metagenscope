@@ -27,3 +27,4 @@ jobs:
       - run:
           name: Run pylint
           command: tox -e pylint
+          when: always
