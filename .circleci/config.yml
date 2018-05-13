@@ -6,11 +6,6 @@ jobs:
       - image: themattrix/tox
 
     steps:
-
-      - run:
-          name: Install Git
-          command: apt-get update; apt-get install -y git
-
       - checkout
 
       - run:
