@@ -2,7 +2,7 @@
 
 from metagenscope_cli.sample_sources import SampleSource
 
-from .constants import *  # pylint:disable=wildcard-import,unused-wildcard-import
+from .constants import UNSUPPORTED_RESULT_TYPES
 
 
 def parse_file_path(file_path):
@@ -29,7 +29,7 @@ class FileSource(SampleSource):
         catalog = {}
         for file in self.files:
             sample_name, result_type, file_type = parse_file_path(file)
-            if result_type in NO_PARSE:
+            if result_type in UNSUPPORTED_RESULT_TYPES:
                 continue
 
             try:

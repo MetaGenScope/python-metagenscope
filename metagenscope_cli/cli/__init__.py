@@ -13,6 +13,7 @@ def main():
     """Use to interact with the MetaGenScope web platform."""
     pass
 
+
 main.add_command(register)
 main.add_command(login)
 main.add_command(status)

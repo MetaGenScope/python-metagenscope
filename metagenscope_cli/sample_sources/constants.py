@@ -1,7 +1,7 @@
 """Constants for sample source."""
 
 
-NO_PARSE = [
+UNSUPPORTED_RESULT_TYPES = [
     'filter_human_dna',
     'mash_sketch',
     'resistome_amrs',

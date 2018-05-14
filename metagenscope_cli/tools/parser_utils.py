@@ -2,7 +2,8 @@
 
 from json import loads
 
-from .constants import *  # pylint:disable=wildcard-import,unused-wildcard-import
+from .constants import (RPK_KEY, RPKM_KEY, RPKMG_KEY, TOP_N_FILTER, ABUNDANCE_KEY,
+                        COVERAGE_KEY, GENOME_EQUIVALENTS_KEY, AGS_KEY, TOTAL_BASES_KEY)
 
 
 def jloads(fname):
