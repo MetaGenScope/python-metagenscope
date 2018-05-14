@@ -2,11 +2,10 @@
 
 import click
 
-from .cli import main
 from .utils import add_authorization
 
 
-@main.group()
+@click.group()
 def get():
     """Get data from the server."""
     pass

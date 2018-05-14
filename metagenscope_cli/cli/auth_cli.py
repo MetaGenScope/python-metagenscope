@@ -7,7 +7,6 @@ from requests.exceptions import HTTPError
 from metagenscope_cli.network.authenticator import Authenticator
 from metagenscope_cli.config import config
 
-from .cli import main
 from .utils import add_authorization
 
 
@@ -23,7 +22,7 @@ def handle_auth_request(request_generator):
         click.echo(f'There was an error with registration: {http_error}', err=True)
 
 
-@main.command()
+@click.command()
 @click.option('-h', '--host', default=None)
 @click.argument('username')
 @click.argument('user_email')
@@ -41,7 +40,7 @@ def register(host, username, user_email, password):
     handle_auth_request(request_generator)
 
 
-@main.command()
+@click.command()
 @click.option('-h', '--host', default=None)
 @click.argument('user_email')
 @click.argument('password')
@@ -58,7 +57,7 @@ def login(host, user_email, password):
     handle_auth_request(request_generator)
 
 
-@main.command()
+@click.command()
 @add_authorization()
 def status(uploader):
     """Get user status."""

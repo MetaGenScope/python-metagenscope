@@ -3,11 +3,10 @@
 from sys import stderr
 import click
 
-from .cli import main
 from .utils import add_authorization
 
 
-@main.group()
+@click.group()
 def run():
     """Run actions on the server."""
     pass

@@ -6,11 +6,10 @@ import click
 from metagenscope_cli.sample_sources.data_super_source import DataSuperSource
 from metagenscope_cli.sample_sources.file_source import FileSource
 
-from .cli import main
 from .utils import batch_upload, add_authorization, parse_metadata
 
 
-@main.group()
+@click.group()
 def upload():
     """Handle different types of uploads."""
     pass
