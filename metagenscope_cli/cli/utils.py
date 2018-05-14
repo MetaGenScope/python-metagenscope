@@ -1,5 +1,7 @@
 """Utilities for MetaGenScope CLI."""
 
+import os
+from sys import stderr
 from datetime import datetime
 from functools import wraps
 
@@ -11,10 +13,10 @@ from metagenscope_cli.network.token_auth import TokenAuth
 from metagenscope_cli.tools.parse_metadata import parse_metadata_from_csv
 
 
-def parse_metadata(filename):
+def parse_metadata(filename, sample_names):
     """Parse sample metadata."""
     if filename[-4:] == '.csv':
-        return parse_metadata_from_csv(filename)
+        return parse_metadata_from_csv(filename, sample_names)
     raise ValueError(f'{filename} extension is unsupported')
 
 
@@ -47,6 +49,7 @@ def batch_upload(uploader, samples, group_uuid=None, upload_group_name=None):
             sample_uuid = result['sample_uuid']
             sample_name = result['sample_name']
             result_type = result['result_type']
+
             if result['type'] == 'error':
                 exception = result['exception']
                 click.secho(f'  - {sample_name} ({sample_uuid}): {result_type}',
@@ -54,6 +57,7 @@ def batch_upload(uploader, samples, group_uuid=None, upload_group_name=None):
                 click.secho(f'    {exception}', fg='red', err=True)
             else:
                 click.secho(f'  - {sample_name} ({sample_uuid}): {result_type}', fg='green')
+    click.echo(f'group info: <name: \'{upload_group_name}\' UUID: \'{group_uuid}\'>')
 
 
 def add_authorization():
@@ -69,6 +73,13 @@ def add_authorization():
                 auth = TokenAuth(jwt_token=auth_token)
             except KeyError:
                 warn_missing_auth()
+
+            if host is None:
+                try:
+                    host = os.environ['MGS_HOST']
+                except KeyError:
+                    print('No host. Exiting', file=stderr)
+                    exit(1)
 
             knex = Knex(token_auth=auth, host=host)
             uploader = Uploader(knex=knex)
