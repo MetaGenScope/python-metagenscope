@@ -47,7 +47,6 @@ class Uploader:
     def get_try_upload(self, sample_uuid, sample_name,  # pylint:disable=too-many-arguments
                        result_type, result, data, dryrun):
         """Return a function that will attempt an upload when called."""
-
         def try_upload():
             """Attempt an upload, return the result."""
             date_now = datetime.now()
